@@ -1,0 +1,91 @@
+type: overfit
+trainer: stage_inr
+dataset:
+  type: shapenet
+  supervision: siren_sdf  # sdf / occ / siren_sdf
+  folder: /home/umaru/PycharmProjects/meta_shaope/data/buda.npy
+  #folder: /home/umaru/Downloads/happy_recon/happy_vrip_res4.xyz
+  transforms:
+    type: shapenet
+
+arch: # needs to add encoder, modulation type
+  type: meta_low_rank_modulated_inr
+  ema: null
+
+  rank: [128] # list, assert len(n_weight_groups) in [1, hyponet.n_layer]
+  modulated_layer_idxs: [1,3]
+  use_factorization:  false
+
+  n_inner_step: 5
+  inner_lr: 0.003
+
+
+  coord_sampler:
+    data_type: image
+    coord_range: [-1.0, 1.0]
+    train_strategy: null
+    val_strategy: null
+
+  hyponet:
+    type: mlp
+    n_layer: 5 # including the output layer
+    hidden_dim: [256] # list, assert len(hidden_dim) in [1, n_layers-1]
+    use_bias: true
+    input_dim: 3
+    output_dim: 2
+    output_bias: 0.5   #0.5
+
+    fourier_mapping:
+      type: Gaussian   # PE / Gaussian / siren equal None
+      trainable: false
+      use_ff: true  # has to be false when using siren
+      ff_sigma: 0  # ff_dim = 2*ff_sigma *3 + (3)
+      ff_dim: 256 # number of next channel / number of gaussians
+
+    activation:
+      type: relu
+      siren_w0: null
+
+    initialization:
+      weight_init_type: kaiming_uniform  #siren
+      bias_init_type: zero  # zero/siren
+    normalize_weight: false
+
+loss:
+  type: mse #now unnecessary
+  subsample:
+    type: null
+    ratio: 0.1
+  coord_noise: null
+
+optimizer:
+  type: overfit            # overfit / adam
+  init_lr: 0.001        # e1-3 for sdf  #5e-5 for sine
+  weight_decay: 0.0000
+
+  betas: [0.9, 0.95] #[0.9, 0.95]
+  warmup:
+    epoch: 0
+    multiplier: 1
+    buffer_epoch: 0
+    min_lr: 0.00001
+    mode: adaptive
+    step_size: 750
+    gamma: 0.5
+    patience: 30
+    patience_adaptive: 30
+    factor: 0.5
+    threshold: 0
+    start_from_zero: True
+  max_gn: null
+
+experiment:
+  amp: True
+  batch_size: 1
+  total_batch_size: 1
+  epochs: 100000
+  epochs_cos: 30
+  save_ckpt_freq: 200
+  test_freq: 30
+  test_imlog_freq: 50
+
