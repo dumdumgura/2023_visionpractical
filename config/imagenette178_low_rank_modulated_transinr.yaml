@@ -2,8 +2,8 @@ type: generalization
 trainer: stage_inr
 dataset:
   type: shapenet
-  supervision: siren_sdf  #siren/siren_sdf
-  folder: ./data/1shape
+  supervision: sdf  #siren/siren_sdf
+  folder: /home/umaru/PycharmProjects/meta_shaope/data/171shape_occ_sdf
   transforms:
     type: shapenet
 

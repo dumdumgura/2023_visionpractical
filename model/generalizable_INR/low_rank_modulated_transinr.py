@@ -94,7 +94,7 @@ class LowRankModulatedTransINR(nn.Module):
         batch_size = shape.shape[0]
         #xs : B, input_dim, num_points
         num_onsurface = shape.shape[1]//2
-        xs_xyz,xs_emb = self.encode(coord[:,:num_onsurface,:]) #Batch,
+        xs_xyz,xs_emb = self.encode(coord[:,-num_onsurface:,:]) #Batch,
         #xs_latent = xs_emb
         xs_psenc = self.embedder.embed(xs_xyz)
 
