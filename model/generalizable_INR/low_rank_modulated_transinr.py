@@ -1,28 +1,36 @@
+import numpy as np
 import torch
 import torch.nn as nn
 
-from .configs import TransINRConfig
+from .configs import LowRankModulatedTransINRConfig
 from .modules.coord_sampler import CoordSampler
 from .modules.data_encoder import DataEncoder
 from .modules.hyponet import HypoNet
 from .modules.latent_mapping import LatentMapping
 from .modules.weight_groups import WeightGroups
 from .modules import diff_operators
+from ..layers import AttentionStack
+from .modules.sdf_meshing import create_meshes
+from .modules.embedder import Embedder
+class LowRankModulatedTransINR(nn.Module):
+    r"""
+    `class LowRankModulatedTransINR` is the transformer to predict the Instance Pattern Composers
+    to modulate a hyponetwork with a coordinate-based MLP.
+    After the transformer predicts the instance pattern composers, which is one factorized weight matrix,
+    one layer of the coordinate-based MLP is modulated, while the remaining weights are shared across data.
+    Please refer to https://arxiv.org/abs/2211.13223 for more details.
+    """
+    Config = LowRankModulatedTransINRConfig
 
-
-class TransINR(nn.Module):
-    Config = TransINRConfig
-
-    def __init__(self, config: TransINRConfig):
+    def __init__(self, config: LowRankModulatedTransINRConfig):
         super().__init__()
-        self.config = config = config.copy()  # type: TransINRConfig
+        self.config = config = config.copy()
         self.hyponet_config = config.hyponet
 
         self.coord_sampler = CoordSampler(config.coord_sampler)
-
-        self.encoder = DataEncoder(config.data_encoder)  # DataEncoder have to be developed
+        self.encoder = DataEncoder(config.data_encoder)
         self.latent_mapping = LatentMapping(config.latent_mapping, input_dim=self.encoder.output_dim)
-
+        self.transformer = AttentionStack(config.transformer)
         self.hyponet = HypoNet(config.hyponet)
 
         self.weight_groups = WeightGroups(
@@ -32,28 +40,48 @@ class TransINR(nn.Module):
             modulated_layer_idxs=config.modulated_layer_idxs,
         )
 
+
+        self.ff_config = config.hyponet.fourier_mapping
+        self.embedder = Embedder(
+            include_input=True,
+            input_dims=3,
+            max_freq_log2=12 - 1,
+            num_freqs=12,
+            log_sampling=True,
+            periodic_fns=[torch.sin, torch.cos],
+        )
+
         self.num_group_total = self.weight_groups.num_group_total
-        self.group_modulation_postfc = nn.ModuleDict()  # pass nn.Linear(embed_dim, shape[0]-1)
+        self.shared_factor = nn.ParameterDict()
+        self.group_modulation_postfc = nn.ModuleDict()
         for name, shape in self.hyponet.params_shape_dict.items():
             if name not in self.weight_groups.group_idx_dict:
                 continue
-            postfc_input_dim = self.config.transformer.embed_dim
-            postfc_output_dim = shape[0] - 1 if self.hyponet.use_bias else shape[0]
+            # if a weight matrix of hyponet is modulated, this model does not use `base_param` in the hyponet.
+            self.hyponet.ignore_base_param_dict[name] = True
 
+            rank = self.weight_groups.num_groups_dict[name]
+            fan_in = (shape[0] - 1) if self.hyponet.use_bias else shape[0]
+            fan_out = shape[1]
+
+            shared_factor = torch.randn(1, rank, fan_out) / np.sqrt(rank * fan_in)
+            self.shared_factor[name] = nn.Parameter(shared_factor)
+
+            postfc_input_dim = self.config.transformer.embed_dim
+            postfc_output_dim = (shape[0] - 1) if self.hyponet.use_bias else shape[0]
             self.group_modulation_postfc[name] = nn.Sequential(
                 nn.LayerNorm(postfc_input_dim), nn.Linear(postfc_input_dim, postfc_output_dim)
             )
 
     def _init_weights(self, module):
-        # other params would be manually initialized.
         if isinstance(module, nn.LayerNorm):
             module.bias.data.zero_()
             module.weight.data.fill_(1.0)
         elif module.bias is not None:
             module.bias.data.zero_()
 
-    def forward(self, xs, coord=None, keep_xs_shape=True):
-        """
+    def forward(self, xs, coord=None, keep_xs_shape=True,type='occ',vis=False):
+        r"""
         Args:
             xs (torch.Tensor): (B, input_dim, *xs_spatial_shape)
             coord (torch.Tensor): (B, *coord_spatial_shape)
@@ -62,13 +90,23 @@ class TransINR(nn.Module):
         Returns:
             outputs (torch.Tensor): `assert outputs.shape == xs.shape`
         """
-        batch_size = xs.shape[0]
-        coord = self.sample_coord_input(xs) if coord is None else coord
-        xs_emb = self.encode(xs)
-        xs_latent = self.encode_latent(xs_emb)  # latent mapping
+        shape = xs[:, :, 0] if type == 'sdf' or type == 'occ' else xs['sdf'][..., 0]
+        batch_size = shape.shape[0]
+        #xs : B, input_dim, num_points
+        num_onsurface = shape.shape[1]//2
+        xs_xyz,xs_emb = self.encode(coord[:,:num_onsurface,:]) #Batch,
+        #xs_latent = xs_emb
+        xs_psenc = self.embedder.embed(xs_xyz)
+
+        xs_latent = torch.cat([xs_emb,xs_psenc],dim=2)
+
+        #xs_latent = self.encode_latent(xs_emb)  # latent mapping
         weight_token_input = self.weight_groups(batch_size=batch_size)  # (B, num_groups_total, embed_dim)
 
         transformer_input = torch.cat([xs_latent, weight_token_input], dim=1)
+
+        #transformer_input = torch.cat([weight_token_input])
+
         transformer_output = self.transformer(transformer_input)
 
         transformer_output_groups = transformer_output[:, -self.num_group_total :]
@@ -78,26 +116,43 @@ class TransINR(nn.Module):
 
         # predict all pixels of coord after applying the modulation_parms into hyponet
         outputs = self.hyponet(coord, modulation_params_dict=modulation_params_dict)
-        if keep_xs_shape:
-            permute_idx_range = [i for i in range(1, xs.ndim - 1)]
-            outputs = outputs.permute(0, -1, *permute_idx_range)
+        #if keep_xs_shape:
+        #    permute_idx_range = [i for i in range(1, xs.ndim - 1)]
+        #    outputs = outputs.permute(0, -1, *permute_idx_range)
+        if vis:
+            visuals = self.decode_with_modulation_factors(modulation_params_dict, type=type)
+            return visuals
         return outputs
 
-    def predict_group_modulations(self, group_output, **kwargs):
 
+
+    def decode_with_modulation_factors(self, modulation_factors_dict,overfit=False,type='occ'):
+        r"""Inference function on Hyponet, modulated via given modulation factors."""
+        #coord = self.sample_coord_input(xs) if coord is None else coord
+        meshes = create_meshes(
+                self.hyponet, modulation_factors_dict,level=0.0, N=256,overfit=overfit,type=type
+                )
+
+        return meshes
+
+
+    def predict_group_modulations(self, group_output):
         modulation_params_dict = dict()
-        num_vectors_per_group = self.weight_groups.num_vectors_per_group_dict
-
         for name in self.hyponet.params_dict.keys():
-            if name not in self.wpermuteeight_groups.group_idx_dict:
+            if name not in self.weight_groups.group_idx_dict:
                 continue
             start_idx, end_idx = self.weight_groups.group_idx_dict[name]
             _group_output = group_output[:, start_idx:end_idx]
 
             # post fc convert the transformer outputs into modulation weights
-            _modulation = self.group_modulation_postfc[name](_group_output)
-            _modulation = _modulation.transpose(-1, -2)  # (B, fan_in, group_size)
-            _modulation = _modulation.repeat(1, 1, num_vectors_per_group[name])  # (B, fan_in, fan_out)
+            _modulation = self.group_modulation_postfc[name](_group_output)  # (B, group_size, fan_in+fan_out)
+
+            _modulation_in = _modulation.transpose(-1, -2)  # (B, fan_in, group_size)
+            _modulation_out = self.shared_factor[name]  # (1, group_size, fan_out)
+            _modulation_out = _modulation_out.repeat(_modulation_in.shape[0], 1, 1)  # (B, group_size, fan_out)
+
+            # factorized matrix multiplication for weight modulation
+            _modulation = torch.bmm(_modulation_in, _modulation_out)  # (B, fan_in, fan_out)
             modulation_params_dict[name] = _modulation
         return modulation_params_dict
 
@@ -252,7 +307,7 @@ class TransINR(nn.Module):
         return coord_inputs
 
     def predict_modulation_params_dict(self, xs):
-        """Computes the modulation parameters for given inputs."""
+        r"""Computes the modulation parameters for given inputs."""
         batch_size = xs.shape[0]
         xs_emb = self.encode(xs)
         xs_latent = self.encode_latent(xs_emb)  # latent mapping
@@ -269,7 +324,7 @@ class TransINR(nn.Module):
         return modulation_params_dict
 
     def predict_hyponet_params_dict(self, xs):
-        """Computes the modulated parameters of hyponet for given inputs."""
+        r"""Computes the modulated parameters of hyponet for given inputs."""
         modulation_params_dict = self.predict_modulation_params_dict(xs)
         params_dict = self.hyponet.compute_modulated_params_dict(modulation_params_dict)
         return params_dict

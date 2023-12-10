@@ -29,6 +29,11 @@ class CLIPImageEncoderConfig:
     apply_ln_post: bool = True
     encoding_token_type: str = "all"  # "cls" | "spatial-only" | "all"
 
+@dataclass
+class mlpConfig:
+    patch_size: int = 9
+    padding: int = 1
+
 
 @dataclass
 class DataEncoderConfig:
@@ -40,6 +45,8 @@ class DataEncoderConfig:
     def __post_init__(self):
         supported_types = {
             "unfold": UnfoldConfig,
+            "mlp": mlpConfig,
+            "PointNet2": mlpConfig,
             "unfold_audio": Unfold1DConfig,
             "vqgan": VQGANEncoderConfig,
             "clip": CLIPImageEncoderConfig,

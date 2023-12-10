@@ -2,8 +2,8 @@ import os
 
 import torch
 import numpy as np
-
-
+from pathlib import Path
+from PIL import Image
 from torch.utils.data import Dataset
 
 class ShapeNet(Dataset):
@@ -16,7 +16,7 @@ class ShapeNet(Dataset):
         self.split = split
         self.data_source = os.path.join(dataset_folder,split)
         #self.filter = os.path.join(dataset_folder,'shape_filter_small.txt')
-        self.batch =20000
+        self.batch = 5000
         self.type = type
         files = []
         filter_list=[]
@@ -35,7 +35,7 @@ class ShapeNet(Dataset):
         return len(self.npyfiles)
 
     def __getitem__(self, idx):
-        if self.type == 'sdf':
+        if self.type == 'sdf' or self.type =='occ':
             path = os.path.join(self.data_source,self.npyfiles[idx])
             point_cloud = np.load(path)
             self.coords = point_cloud[:, :3]
@@ -123,7 +123,7 @@ class Pointcloud(Dataset):
         self.batch =20000
 
         self.type = type
-        if self.type =='sdf':
+        if self.type =='sdf'or self.type =='occ':
             point_cloud = np.load(
                 pc_path
             )
@@ -164,7 +164,7 @@ class Pointcloud(Dataset):
 
 
     def __getitem__(self, idx):
-        if self.type == 'sdf':
+        if self.type == 'sdf'or self.type =='occ':
 
             sample= self.create_sdf_sample(idx)
             return {"coords": torch.from_numpy(sample[:,:3]).float(),
@@ -212,5 +212,53 @@ class Pointcloud(Dataset):
         return np.concatenate([pos_tensor_sel,neg_tensor_sel],axis=0)
 
 
+class ImageNette(Dataset):
+    """Dataset for ImageNette that contains 10 classes of ImageNet.
+    Dataset parses the pathes of images and load the image using PIL loader.
+
+    Args:
+        split: "train" or "val"
+        transform (sequence or torch.nn.Module): list of transformations
+    """
+
+    root = Path(__file__).parent.parent.joinpath("data/imagenette")
+    """Dataset for ImageNette that contains 10 classes of ImageNet.
+    Dataset parses the pathes of images and load the image using PIL loader.
+
+    Args:
+        split: "train" or "val"
+        transform (sequence or torch.nn.Module): list of transformations
+    """
+
+    def __init__(self, split="train", transform=None):
+        assert split in ["train", "val"]
+        self.transform = transform
+
+        root_path = os.path.join(ImageNette.root, split)
+        class_folders = sorted(os.listdir(root_path))
+        self.data_path = []
+
+        for class_folder in class_folders:
+            # for testing:
+            if class_folder == 'test':
+                filenames = sorted(os.listdir(os.path.join(root_path, class_folder)))
+                for name in filenames:
+                    self.data_path.append(os.path.join(root_path, class_folder, name))
+
+
+    def __len__(self):
+        return len(self.data_path)
+
+    def __getitem__(self, idx):
+        """
+        Args:
+            idx (int): index of data_path
+        Returns:
+            img (torch.Tensor): (C, H, W) shape of tensor
+        """
+        img = Image.open(self.data_path[idx]).convert("RGB")
+        if self.transform is not None:
+            img = self.transform(img)
+        return img
 
 

@@ -2,8 +2,8 @@ type: generalize
 trainer: stage_inr
 dataset:
   type: shapenet
-  supervision: siren_sdf  #siren/siren_sdf
-  folder: /home/umaru/praktikum/changed_version/ginr-ipc/data/shapenet/siren_sdf_double
+  supervision: sdf  #siren/siren_sdf
+  folder: ./data/171shape_occ_sdf
   transforms:
     type: shapenet
 
@@ -12,10 +12,10 @@ arch: # needs to add encoder, modulation type
   ema: null
 
   rank: [128] # list, assert len(n_weight_groups) in [1, hyponet.n_layer]
-  modulated_layer_idxs: [0,2]
+  modulated_layer_idxs: [1,3]
   use_factorization: false
 
-  n_inner_step: 5
+  n_inner_step: 8
   inner_lr: 0.000003
 
 
@@ -28,20 +28,20 @@ arch: # needs to add encoder, modulation type
 
   hyponet:
     type: mlp
-    n_layer: 5 # including the output layer
+    n_layer: 6 # including the output layer
     hidden_dim: [256] # list, assert len(hidden_dim) in [1, n_layers-1]
     use_bias: true
     input_dim: 3
     output_dim: 2
-    output_bias: 0.5
+    output_bias: 0.5 #0.5 essential for siren but why
 
 
     fourier_mapping:
-      type: Gaussian #Gaussian
+      type: PE #Gaussian
       trainable: false
       use_ff: true # true
-      ff_sigma: 0 # ff_dim = 2*ff_sigma *3 + (3)
-      ff_dim: 256
+      ff_sigma: 6 # ff_dim = 2*ff_sigma *3 + (3)
+      ff_dim: 39
 
     activation:
       type: relu #relu
@@ -50,7 +50,7 @@ arch: # needs to add encoder, modulation type
     initialization:
       weight_init_type: kaiming_uniform #kaiming_uniform
       bias_init_type: zero #zero
-    normalize_weight: false
+    normalize_weight: true
 
 
 loss:
@@ -62,8 +62,8 @@ loss:
 
 optimizer:
   type: adam
-  init_lr: 0.0001
-  weight_decay: 0.001 #1e-4  weight decay help convergence of meta_learning??
+  init_lr: 0.00001
+  weight_decay: 0.0001 #1e-4  weight decay help convergence of meta_learning??
 
   betas: [0.9, 0.95] #[0.9, 0.95]
   warmup:
@@ -75,7 +75,7 @@ optimizer:
     step_size: 1000
     gamma: 0.8
     patience: 30
-    patience_adaptive: 600
+    patience_adaptive: 6
     factor: 0.8
     threshold: 0
     start_from_zero: True
@@ -84,11 +84,11 @@ optimizer:
 
 experiment:
   amp: True
-  batch_size: 1
-  total_batch_size: 1
+  batch_size: 2
+  total_batch_size: 2
   epochs: 10000
   epochs_cos: 30
-  save_ckpt_freq: 50
+  save_ckpt_freq: 20
   test_freq: 1
-  test_imlog_freq: 5
+  test_imlog_freq: 50
 

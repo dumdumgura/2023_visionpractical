@@ -19,11 +19,11 @@ def default_parser():
     parser = argparse.ArgumentParser()
     #parser.add_argument("-m", "--model-config", type=str, default="./configs/meta_learning/low_rank_modulated_meta/imagenette178_meta_low_rank.yaml")
     #parser.add_argument("-m", "--model-config", type=str,default="./configs/meta_learning/low_rank_modulated_meta/shapenet_meta.yaml")
-    parser.add_argument("-m", "--model-config", type=str,default="./config/shapenet_meta_sdf.yaml")
-    parser.add_argument("-r", "--result-path", type=str, default="./exp_week7/")
-    parser.add_argument("-t", "--task", type=str, default="siren_relu_Guassian256_double_ml02")
+    parser.add_argument("-m", "--model-config", type=str,default="./config/imagenette178_low_rank_modulated_transinr.yaml")
+    parser.add_argument("-r", "--result-path", type=str, default="./exp_week8/")
+    parser.add_argument("-t", "--task", type=str, default="ssdf_lr_1e-4")
 
-    #parser.add_argument("-l", "--load-path", type=str, default="./exp_week7/shapenet_meta_sdf/siren_relu_Guassian256_double_ml1/epoch100_model.pt")
+    #parser.add_argument("-l", "--load-path", type=str, default="exp_week7/shapenet_meta_sdf/tsdf0.3_PE6_2/epoch840_model.pt")
     parser.add_argument("-l", "--load-path", type=str,default="")
     parser.add_argument("-p", "--postfix", type=str, default="")
     parser.add_argument("--seed", type=int, default=0)
@@ -50,7 +50,7 @@ def parse_args():
 
 
 if __name__ == "__main__":
-
+    print(torch.cuda.is_available())
     args, extra_args = parse_args()
     set_seed(args.seed)
     config, logger, writer = setup(args, extra_args)

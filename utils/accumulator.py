@@ -34,7 +34,8 @@ class AccmStageINR:
 
         for name, value in metrics_to_add.items():
             if name not in self.metrics_sum:
-                raise KeyError(f"unexpected metric name: {name}")
+                #raise KeyError(f"unexpected metric name: {name}")
+                pass
             self.metrics_sum[name] += value
 
         self.counter += count if not sync else count * distenv.world_size

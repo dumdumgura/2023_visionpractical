@@ -50,6 +50,9 @@ class WeightGroups(nn.Module):
         weight_groups = create_params_with_init(shape=[self.num_group_total, weight_dim], init_type="normal")
         self.weight_groups = nn.Parameter(weight_groups)
 
+        # test:
+        #self.weight_groups.requires_grad = False
+
     def get_group_idx_by_name(self, name):
         """in fact unnecessary helper, if you directly access to group_idx_dict"""
         start_idx, end_idx = self.group_idx_dict[name]

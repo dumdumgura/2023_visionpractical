@@ -4,7 +4,7 @@ import trimesh
 import skimage
 
 
-from mesh_to_sdf import sample_sdf_near_surface,get_surface_point_cloud
+from mesh_to_sdf import sample_sdf_near_surface,get_surface_point_cloud,scale_to_unit_sphere
 import pyrender
 import numpy as np
 import os
@@ -25,7 +25,7 @@ save_folder = '/home/umaru/praktikum/changed_version/ginr-ipc/data/shapenet/sdf_
 '''
 
 
-mode = 'sdf'
+mode = 'siren_sdf'
 
 folder = '/home/umaru/praktikum/changed_version/HyperDiffusion/data/02691156_manifold/'
 save_folder = './data'
@@ -54,15 +54,6 @@ for file in files:
     #mesh= trimesh.load(path)
     mesh = trimesh.load(os.path.join(folder,file))
 
-    vertices = mesh.vertices
-    vertices -= np.mean(vertices, axis=0, keepdims=True)
-
-    v_max = np.amax(vertices)
-    v_min = np.amin(vertices)
-    vertices *= 0.5 * 0.95 / (max(abs(v_min), abs(v_max)))
-
-    mesh.vertices = vertices
-
     if mode == 'sdf':
         points, sdf, grads = sample_sdf_near_surface(mesh, number_of_points=300000,sign_method='depth',return_gradients=True)#1000w
         point_cloud = np.concatenate([points.reshape(-1, 3), sdf.reshape(-1,1),grads.reshape(-1,3)], axis=-1)
@@ -78,6 +69,7 @@ for file in files:
         print(end-start)
 
     elif mode == 'siren_sdf':
+        mesh = scale_to_unit_sphere(mesh)
         pcd = get_surface_point_cloud(mesh,surface_point_method='scan',calculate_normals=True)
         points,normal = pcd.get_random_surface_points(count=300000)
         #print(points.shape)

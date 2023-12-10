@@ -75,10 +75,11 @@ class HypoNet(nn.Module):
 
         if not ff_config.use_ff:
             fan_in = config.input_dim
-        elif ff_config.type=='3d':
+
+        elif ff_config.type!='deterministic_transinr':
             fan_in = ff_config.ff_dim
         else:
-            fan_in = ff_config.ff_dim
+            fan_in = ff_config.ff_dim*2
 
         fan_in = fan_in + 1 if use_bias else fan_in
         for i in range(config.n_layer - 1):
@@ -137,7 +138,7 @@ class HypoNet(nn.Module):
         elif ff_type == "deterministic_transinr_nerf":
             self.ff_linear = 2 ** torch.linspace(0, ff_sigma, self.ff_dim // self.config.input_dim)
         else:
-            raise NotImplementedError
+            pass
 
         self.ff_linear = nn.Parameter(self.ff_linear, requires_grad=trainable)
 
@@ -215,15 +216,15 @@ class HypoNet(nn.Module):
 
                 if self.ignore_base_param_dict[param_key]:
                     base_param_w = 1.
-                    print("modulated_layer"+str(idx)+": " + str(modulation_param.norm()))
+                    #print("modulated_layer"+str(idx)+": " + str(modulation_param.norm()))
 
                 else:
-                    print("base_layer"+str(idx)+": "+str(base_param_w.norm()))
+                    #print("base_layer"+str(idx)+": "+str(base_param_w.norm()))
                     pass
                 param_w = base_param_w * modulation_param
 
-                #if self.normalize_weight:
-                #    param_w = F.normalize(param_w, dim=0)
+                if self.normalize_weight:
+                    param_w = F.normalize(param_w, dim=0)
 
                 modulated_param = torch.cat([param_w, base_param_b], dim=0)
 
@@ -274,6 +275,9 @@ class HypoNet(nn.Module):
             hidden = self.embedder(coord)
         elif self.ff_config.type == 'siren':
             hidden = coord
+        elif self.ff_config.type == 'deterministic_transinr':
+            hidden = self.fourier_mapping(coord) if self.use_ff else coord
+
 
         for idx in range(self.config.n_layer):
             param_key = f"linear_wb{idx}"
@@ -305,15 +309,15 @@ class HypoNet(nn.Module):
 
                 if self.ignore_base_param_dict[param_key]:
                     base_param_w = 1.
-                    print("modulated_layer" + str(idx) + ": " + str(modulation_param.norm()))
+                    #print("modulated_layer" + str(idx) + ": " + str(modulation_param.norm()))
                 else:
-                    print("base_layer" + str(idx) + ": " + str(base_param_w.norm()))
+                    #print("base_layer" + str(idx) + ": " + str(base_param_w.norm()))
                     pass
 
                 param_w = base_param_w * modulation_param
 
                 if self.normalize_weight:
-                    param_w = F.normalize(param_w, dim=0)
+                    param_w = F.normalize(param_w, dim=1)
 
                 modulated_param = torch.cat([param_w, base_param_b], dim=1)
 
@@ -321,9 +325,9 @@ class HypoNet(nn.Module):
 
                 if self.ignore_base_param_dict[param_key]:
                     base_param = 1.
-                    print("modulated_layer" + str(idx) + ": " + str(modulation_param.norm()))
+                    #print("modulated_layer" + str(idx) + ": " + str(modulation_param.norm()))
                 else:
-                    print("base_layer" + str(idx) + ": " + str(base_param_w.norm()))
+                    #print("base_layer" + str(idx) + ": " + str(base_param_w.norm()))
                     pass
 
 

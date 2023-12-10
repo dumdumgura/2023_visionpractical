@@ -2,7 +2,7 @@ from omegaconf import OmegaConf
 from easydict import EasyDict as edict
 import yaml
 
-from model.generalizable_INR.configs import TransINRConfig
+from model.generalizable_INR.configs import TransINRConfig,LowRankModulatedTransINRConfig
 from model.generalizable_INR.configs import MetaLowRankModulatedINRConfig
 
 def easydict_to_dict(obj):
@@ -21,6 +21,9 @@ def load_config(config_path):
 def augment_arch_defaults(arch_config):
     if arch_config.type == "transinr":
         arch_defaults = TransINRConfig.create(arch_config)
+
+    elif arch_config.type == "low_rank_modulated_transinr":
+        arch_defaults = LowRankModulatedTransINRConfig.create(arch_config)
 
     elif arch_config.type == "meta_low_rank_modulated_inr":
         arch_defaults = MetaLowRankModulatedINRConfig.create(arch_config)

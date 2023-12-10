@@ -2,7 +2,8 @@ import os
 
 import torch
 
-from dataset.mydatasets import ShapeNet,Pointcloud
+from dataset.mydatasets import ShapeNet,Pointcloud,ImageNette
+from .transforms import create_transforms
 
 SMOKE_TEST = bool(os.environ.get("SMOKE_TEST", 0))
 
@@ -15,7 +16,11 @@ def create_dataset(config, is_eval=False, logger=None):
         else:
             dataset_trn = ShapeNet(config.dataset.folder, split="train",type=config.dataset.supervision)
             dataset_val = ShapeNet(config.dataset.folder, split="val",type=config.dataset.supervision)
-
+    elif config.dataset.type == "imagenette":
+        transforms_trn = create_transforms(config.dataset, split="train", is_eval=is_eval)
+        transforms_val = create_transforms(config.dataset, split="val", is_eval=is_eval)
+        dataset_trn = ImageNette(split="train", transform=transforms_trn)
+        dataset_val = ImageNette(split="val", transform=transforms_val)
     else:
         raise ValueError("%s not supported..." % config.dataset.type)
 

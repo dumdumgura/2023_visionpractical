@@ -2,8 +2,8 @@ type: overfit
 trainer: stage_inr
 dataset:
   type: shapenet
-  supervision: siren_sdf  # sdf / occ / siren_sdf
-  folder: /home/umaru/PycharmProjects/meta_shaope/data/buda.npy
+  supervision: sdf  # sdf / occ / siren_sdf
+  folder: /home/umaru/PycharmProjects/meta_shaope/data/171shape_occ_sdf/train/1a04e3eab45ca15dd86060f189eb133.obj.npy
   #folder: /home/umaru/Downloads/happy_recon/happy_vrip_res4.xyz
   transforms:
     type: shapenet
@@ -28,7 +28,7 @@ arch: # needs to add encoder, modulation type
 
   hyponet:
     type: mlp
-    n_layer: 5 # including the output layer
+    n_layer: 6 # including the output layer
     hidden_dim: [256] # list, assert len(hidden_dim) in [1, n_layers-1]
     use_bias: true
     input_dim: 3
@@ -36,11 +36,11 @@ arch: # needs to add encoder, modulation type
     output_bias: 0.5   #0.5
 
     fourier_mapping:
-      type: Gaussian   # PE / Gaussian / siren equal None
+      type: PE   # PE / Gaussian / siren equal None
       trainable: false
       use_ff: true  # has to be false when using siren
-      ff_sigma: 0  # ff_dim = 2*ff_sigma *3 + (3)
-      ff_dim: 256 # number of next channel / number of gaussians
+      ff_sigma: 6  # ff_dim = 2*ff_sigma *3 + (3)
+      ff_dim: 39 # number of next channel / number of gaussians
 
     activation:
       type: relu
@@ -49,7 +49,7 @@ arch: # needs to add encoder, modulation type
     initialization:
       weight_init_type: kaiming_uniform  #siren
       bias_init_type: zero  # zero/siren
-    normalize_weight: false
+    normalize_weight: true
 
 loss:
   type: mse #now unnecessary
@@ -60,7 +60,7 @@ loss:
 
 optimizer:
   type: overfit            # overfit / adam
-  init_lr: 0.001        # e1-3 for sdf  #5e-5 for sine
+  init_lr: 0.001        # e1-4 for sirensdf  #5e-5 for sine   #1e-4 for bce loss
   weight_decay: 0.0000
 
   betas: [0.9, 0.95] #[0.9, 0.95]
@@ -68,7 +68,7 @@ optimizer:
     epoch: 0
     multiplier: 1
     buffer_epoch: 0
-    min_lr: 0.00001
+    min_lr: 0.0001
     mode: adaptive
     step_size: 750
     gamma: 0.5

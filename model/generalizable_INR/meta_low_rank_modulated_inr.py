@@ -73,13 +73,14 @@ class ModulatedParamsFactors(nn.Module):
                 self.shared_factors[name] = nn.Parameter(init_shared_factor)
             else:
                 # rank is irrelevant in this case
-                init_modulation_factor = torch.randn(fan_in, fan_out) / np.sqrt(fan_in) /2
+                init_modulation_factor = torch.randn(fan_in, fan_out) / np.sqrt(fan_in)
                 import math
                 w0 =30
                 w_std = math.sqrt(6.0 / fan_in) / w0
                 #init_modulation_factor = (torch.rand((fan_in, fan_out))*2*w_std-w_std)
                 self.init_modulation_factors[name] = nn.Parameter(init_modulation_factor)
                 self.shared_factors[name] = None
+
 
     def compute_modulation_params_dict(self, modulation_factors_dict):
         r"""Computes modulation param W by multiplying shared factor U and modulation factor V.
@@ -198,7 +199,7 @@ class MetaLowRankModulatedINR(TransINR):
 
 
         meshes = create_meshes(
-                self.hyponet, modulation_params_dict,level=0.0, N=512,overfit=overfit,type=type
+                self.hyponet, modulation_params_dict,level=0.0, N=256,overfit=overfit,type=type
                 )
 
         return meshes
@@ -218,7 +219,7 @@ class MetaLowRankModulatedINR(TransINR):
 
         with torch.enable_grad():
             # compute reconstruction
-            shape = xs[:,:,0] if type=='sdf' else xs['sdf'][...,0]
+            shape = xs[:,:,0] if type=='sdf' or type == 'occ' else xs['sdf'][...,0]
             recons = self.predict_with_modulation_factors(shape, modulation_factors_dict, coord)
 
             factor_names = list(modulation_factors_dict.keys())
@@ -229,7 +230,7 @@ class MetaLowRankModulatedINR(TransINR):
             metrics = self.compute_loss(recons,xs,modulation_list=modulation_factors_list,type=type,coords=coord,mode='sum')
 
             # compute gradient w.r.t. latents
-            grads_list = torch.autograd.grad(metrics["loss_total"], modulation_factors_list, create_graph=False)
+            grads_list = torch.autograd.grad(metrics["loss_total"], modulation_factors_list, create_graph=True)
 
             # take an SGD step
             new_modulation_factors_dict = {}
@@ -253,6 +254,7 @@ class MetaLowRankModulatedINR(TransINR):
                 #print("-------")
                 new_modulation_factors_dict[name] = new_factor
 
+
         # only for logging
         logs = {
             **{f"{key}_mod": value.detach().clone() for key, value in modulation_factors_dict.items()},
@@ -260,6 +262,8 @@ class MetaLowRankModulatedINR(TransINR):
             "loss_total": metrics["loss_total"].detach().clone(),
             "mse": metrics["mse"].detach().clone(),
             "psnr": metrics["psnr"].detach().clone(),
+            "grad": torch.norm(grad,dim=[1,2]).mean().detach().clone(),
+
         }
         return new_modulation_factors_dict, logs
 
@@ -268,7 +272,7 @@ class MetaLowRankModulatedINR(TransINR):
 
         # We assume that inner loop uses the coords of shape identical to the spatial shape of xs, while not using
         # coordinate subsampling. For this reason, we compute `coord` from `xs` in the inner loop.
-        shape = xs[:,:,0] if type == 'sdf' else xs['sdf'][...,0]
+        shape = xs[:,:,0] if type == 'sdf' or type == 'occ' else xs['sdf'][...,0]
 
         #coord = self.sample_coord_input(xs)if coord is None else coord
         modulation_factors_dict = self.get_init_modulation_factors(shape)
@@ -319,7 +323,7 @@ class MetaLowRankModulatedINR(TransINR):
             inner_lr (float, optional): learning rate used in inner steps. (Default: `self.inner_lr`)
             is_training (bool, optional): indicates whether it is in training context. (Default: `self.training`)
         """
-        shape = xs[:,:,0] if type == 'sdf' else xs['sdf'][...,0]
+        shape = xs[:,:,0] if type == 'sdf' or type == 'occ' else xs['sdf'][...,0]
 
         coord = self.sample_coord_input(xs) if coord is None else coord
 

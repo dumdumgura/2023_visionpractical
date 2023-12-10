@@ -143,7 +143,7 @@ def create_meshes(
     modulation_params_dict,
     filename=None,
     N=256,
-    max_batch=10**4,
+    max_batch=2048,
     offset=None,
     scale=None,
     level=0,
@@ -155,7 +155,7 @@ def create_meshes(
     if overfit:
         batch = 1
     else:
-        batch = modulation_params_dict['linear_wb0'].shape[0]
+        batch = modulation_params_dict['linear_wb1'].shape[0]
 
     start = time.time()
     ply_filename = filename
@@ -164,7 +164,7 @@ def create_meshes(
     decoder.eval()
 
     # NOTE: the voxel_origin is actually the (bottom, left, down) corner, not the middle
-    voxel_origin = [-0.5] * 3
+    voxel_origin = [-1] * 3
     voxel_size = -2 * voxel_origin[0] / (N - 1)
 
     overall_index = torch.arange(0, N**3, 1, out=torch.LongTensor())
@@ -199,24 +199,18 @@ def create_meshes(
 
 
         if overfit:
-            if type!='occ':
-                samples[head: min(head + max_batch, num_samples), 3] = (
-                    decoder.forward_overfit(sample_subset, modulation_params_dict=modulation_params_dict).squeeze().detach().cpu()[:,1]
-                # .squeeze(1)
-                )
-            else:
-                samples[head: min(head + max_batch, num_samples), 3] = (
-                    decoder.forward_overfit(sample_subset, modulation_params_dict=modulation_params_dict).squeeze().detach().cpu()
-                )
+
+            samples[head: min(head + max_batch, num_samples), 3] = (
+                decoder.forward_overfit(sample_subset, modulation_params_dict=modulation_params_dict).squeeze().detach().cpu()[:,1]
+            # .squeeze(1)
+            )
+
         else:
-            if type != 'occ':
-                samples[:,head : min(head + max_batch, num_samples), 3] = (
-                    decoder(sample_subset,modulation_params_dict=modulation_params_dict).detach().cpu()[:,:,1]  # .squeeze(1)
-                )
-            else:
-                samples[:,head : min(head + max_batch, num_samples), 3] = (
-                    decoder(sample_subset,modulation_params_dict=modulation_params_dict).detach().cpu() # .squeeze(1)
-                )
+
+            samples[:,head : min(head + max_batch, num_samples), 3] = (
+                decoder(sample_subset,modulation_params_dict=modulation_params_dict).detach().cpu()[:,:,1]  # .squeeze(1)
+            )
+
         head += max_batch
 
     meshes=[]

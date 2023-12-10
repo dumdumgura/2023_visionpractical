@@ -52,7 +52,7 @@ class TrainerTemplate:
             shuffle=True,
             pin_memory=True,
             batch_size=config.experiment.batch_size,
-            num_workers=num_workers,
+            #num_workers=num_workers,
         )
 
         self.loader_val = DataLoader(
@@ -61,7 +61,7 @@ class TrainerTemplate:
             shuffle=True,
             pin_memory=True,
             batch_size=config.experiment.batch_size,
-            num_workers=num_workers,
+            #num_workers=num_workers,
         )
 
         self._scaler = None
