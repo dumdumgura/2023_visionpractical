@@ -1,7 +1,5 @@
 # 2023_vision_practical
-1. Data Preprocessing: set mode to 'siren_sdf' or 'sdf' to generate the data.
-   mode 'siren_sdf' is used for sdf representation, together with loss_formulation in siren paper.
-   mode 'sdf' is used for sdf or sdf representation, together with L1_loss or BCE_loss.
+1. Data Preprocessing: set mode to 'siren_sdf' or 'sdf' to generate the data. Mode 'siren_sdf' is used for sdf representation, together with loss_formulation in siren paper. Mode 'sdf' is used for sdf or sdf representation, together with L1_loss or BCE_loss.
    
    
 ```python
