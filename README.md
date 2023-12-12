@@ -6,4 +6,5 @@
    python utils/mesh_to_sdf_test.py --mode=siren_sdf --input_folder=$YOUR_INPUT_FOLDER --output_folder=$YOUR_OUTPUT_FOLDER
 
 ```
-   
+
+2. Fill in the data_path in corresponding config files and start training
