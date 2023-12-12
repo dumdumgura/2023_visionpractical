@@ -199,7 +199,7 @@ class HypoNet(nn.Module):
             base_param = self.params_dict[param_key]
 
             if (modulation_params_dict is not None) and (param_key in modulation_params_dict.keys()):
-                modulation_param = modulation_params_dict[param_key]
+                modulation_param = modulation_params_dict[param_key].squeeze()
 
             else:
                 if self.config.use_bias:

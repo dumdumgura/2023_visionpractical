@@ -3,7 +3,7 @@ trainer: stage_inr
 dataset:
   type: shapenet
   supervision: sdf  #siren/siren_sdf
-  folder: ./data/171shape_occ_sdf
+  folder: /home/umaru/PycharmProjects/meta_shaope/data/171shape_occ_sdf
   transforms:
     type: shapenet
 
@@ -15,8 +15,8 @@ arch: # needs to add encoder, modulation type
   modulated_layer_idxs: [1,3]
   use_factorization: false
 
-  n_inner_step: 8
-  inner_lr: 0.000003
+  n_inner_step: 4
+  inner_lr: 0.003
 
 
   coord_sampler:
@@ -40,8 +40,8 @@ arch: # needs to add encoder, modulation type
       type: PE #Gaussian
       trainable: false
       use_ff: true # true
-      ff_sigma: 6 # ff_dim = 2*ff_sigma *3 + (3)
-      ff_dim: 39
+      ff_sigma: 0 # ff_dim = 2*ff_sigma *3 + (3)
+      ff_dim: 3
 
     activation:
       type: relu #relu
@@ -62,7 +62,7 @@ loss:
 
 optimizer:
   type: adam
-  init_lr: 0.00001
+  init_lr: 0.0001
   weight_decay: 0.0001 #1e-4  weight decay help convergence of meta_learning??
 
   betas: [0.9, 0.95] #[0.9, 0.95]
@@ -70,7 +70,7 @@ optimizer:
     epoch: 0
     multiplier: 1
     buffer_epoch: 0
-    min_lr: 0.0001
+    min_lr: 0.001
     mode: adaptive
     step_size: 1000
     gamma: 0.8
@@ -90,5 +90,5 @@ experiment:
   epochs_cos: 30
   save_ckpt_freq: 20
   test_freq: 1
-  test_imlog_freq: 50
+  test_imlog_freq: 1
 

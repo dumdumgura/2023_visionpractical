@@ -2,7 +2,7 @@ from mesh_to_sdf import mesh_to_voxels
 import time
 import trimesh
 import skimage
-
+import argparse
 
 from mesh_to_sdf import sample_sdf_near_surface,get_surface_point_cloud,scale_to_unit_sphere
 import pyrender
@@ -25,25 +25,36 @@ save_folder = '/home/umaru/praktikum/changed_version/ginr-ipc/data/shapenet/sdf_
 '''
 
 
-mode = 'siren_sdf'
+parser = argparse.ArgumentParser()
+parser.add_argument('--mode', help='Specify the path.', required=True)
+parser.add_argument('--input_folder', help='Specify the configuration file.', required=True)
+parser.add_argument('--output_folder', help='Specify the configuration file.', required=True)
 
-folder = '/home/umaru/praktikum/changed_version/HyperDiffusion/data/02691156_manifold/'
-save_folder = './data'
+args = parser.parse_args()
+
+mode=args.mode
+input_folder=args.input_folder
+output_folder=args.output_folder
 
 
-filter = '/home/umaru/praktikum/changed_version/ginr-ipc/data/shapenet/shape_filter_small.txt'
+#mode = 'siren_sdf'
+#input_folder = '/home/umaru/praktikum/changed_version/HyperDiffusion/data/02691156_manifold/'
+#output_folder = './data'
+
+
+#filter = '/home/umaru/praktikum/changed_version/ginr-ipc/data/shapenet/shape_filter_small.txt'
 
 files = []
-filter_list = []
+#filter_list = []
 
-with open(filter, "r") as text:
-    for line in text:
-        file_name = line.strip()
-        filter_list.append(file_name)
+#with open(filter, "r") as text:
+    #for line in text:
+    #    file_name = line.strip()
+    #    filter_list.append(file_name)
 
-for file in os.listdir(folder):
-    if file in filter_list:
-        files.append(file)
+for file in os.listdir(input_folder):
+    #if file in filter_list:
+    files.append(file)
 
 i=0
 
@@ -52,9 +63,9 @@ for file in files:
     start = time.time()
     #path = "/home/umaru/Downloads/dragon_recon/dragon_vrip.ply"
     #mesh= trimesh.load(path)
-    mesh = trimesh.load(os.path.join(folder,file))
+    mesh = trimesh.load(os.path.join(input_folder,file))
 
-    if mode == 'sdf':
+    if mode == 'sdf' or mode =='occ':
         points, sdf, grads = sample_sdf_near_surface(mesh, number_of_points=300000,sign_method='depth',return_gradients=True)#1000w
         point_cloud = np.concatenate([points.reshape(-1, 3), sdf.reshape(-1,1),grads.reshape(-1,3)], axis=-1)
 
@@ -63,7 +74,7 @@ for file in files:
         #save_path = os.path.join(save_folder, 'test')
         print(i)
         i = i + 1
-        save_path = os.path.join(save_folder, file)
+        save_path = os.path.join(output_folder, file)
         np.save(save_path, point_cloud)
         end =time.time()
         print(end-start)
@@ -76,12 +87,16 @@ for file in files:
         #print(normal.shape)
         result = np.concatenate([points,normal],axis=-1)
         #print(result.shape)
-        save_path = os.path.join(save_folder, file)
+        save_path = os.path.join(output_folder, file)
         np.save(save_path, result)
         #print(np.count_nonzero(sdf>0.0))
         #print(np.count_nonzero(sdf<0.0))
         #print(np.mean(sdf))
-    '''
+
+    else:
+        print("wrong mode")
+    # for visualization    
+
     #colors = np.zeros(points.shape)
     #colors[sdf < 0.00, 2] = 1
     #colors[sdf > 0.00, 0] = 1
@@ -106,5 +121,5 @@ for file in files:
     #scene.add_node(node)
     #scene.add(node)
     viewer = pyrender.Viewer(scene, use_raymond_lighting=True, point_size=3)
-    '''
-    #break
+
+    break

@@ -94,7 +94,7 @@ class LowRankModulatedTransINR(nn.Module):
         batch_size = shape.shape[0]
         #xs : B, input_dim, num_points
         num_onsurface = shape.shape[1]//2
-        xs_xyz,xs_emb = self.encode(coord[:,-num_onsurface:,:]) #Batch,
+        xs_xyz,xs_emb = self.encode(coord[:,:num_onsurface,:]) #Batch,
         #xs_latent = xs_emb
         xs_psenc = self.embedder.embed(xs_xyz)
 
@@ -365,3 +365,41 @@ class LowRankModulatedTransINR(nn.Module):
             permute_idx_range = [i for i in range(1, outputs.ndim - 1)]
             outputs = outputs.permute(0, -1, *permute_idx_range)
         return outputs
+
+
+    def init_factor_zero(self):
+        factor = torch.rand((256,360))
+        self.specialized_factor =nn.ParameterDict()
+        self.specialized_factor['factor'] =   nn.Parameter(factor)
+
+    def init_factor(self,coord):
+        num_pts = coord.shape[1]
+        #xs : B, input_dim, num_points
+        num_onsurface = num_pts //2
+        xs_xyz,xs_emb = self.encode(coord[0,:num_onsurface,:][None,:,:]) #Batch,
+        #xs_latent = xs_emb
+        xs_psenc = self.embedder.embed(xs_xyz)
+
+        xs_latent = torch.cat([xs_emb,xs_psenc],dim=2)
+        #xs_latent = self.encode_latent(xs_emb)  # latent mapping
+        weight_token_input = self.weight_groups(batch_size=1)  # (num_groups_total, embed_dim)
+        transformer_input = torch.cat([xs_latent, weight_token_input], dim=1)
+        #transformer_input = torch.cat([weight_token_input])
+        transformer_output = self.transformer(transformer_input)
+        transformer_output_groups = transformer_output[:, -self.num_group_total :]
+        self.specialized_factor['factor'] = transformer_output_groups
+
+
+    def overfit_one_shape(self, coord=None,type='occ'):
+        # get the initializaition
+        transformer_output_groups = self.specialized_factor['factor']
+        # convert modulation factors into modulation params
+        modulation_params_dict = self.predict_group_modulations(transformer_output_groups)
+
+        if coord is None:
+            visuals = self.decode_with_modulation_factors(modulation_params_dict, overfit=True,type=type)
+            return visuals
+
+        else:
+            outputs = self.hyponet.forward_overfit(coord, modulation_params_dict=modulation_params_dict)
+            return outputs

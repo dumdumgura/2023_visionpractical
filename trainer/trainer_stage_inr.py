@@ -122,7 +122,7 @@ class Trainer(TrainerTemplate):
 
             ply_data = plyfile.PlyData([el_verts, el_faces])
             # logging.debug("saving mesh to %s" % (ply_filename_out))
-            ply_data.write("./results.tmp/ply/" + str(epoch) + "_" +str(mode)+"_"+ str(it*len(meshes)+k) + "_poly.ply")
+            ply_data.write("./ply/" + str(epoch) + "_" +str(mode)+"_"+ str(it*len(meshes)+k) + "_poly.ply")
 
    # @torch.no_grad()
     def eval(self, valid=True, ema=False, verbose=False, epoch=0):
@@ -200,6 +200,8 @@ class Trainer(TrainerTemplate):
         model.train()
 
         for it, xt in pbar:
+
+
             model.zero_grad(set_to_none=True)
             if self.config.dataset.type == "shapenet":
                 if self.config.dataset.supervision == 'sdf' or self.config.dataset.supervision == 'occ':

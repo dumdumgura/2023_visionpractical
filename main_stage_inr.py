@@ -19,11 +19,11 @@ def default_parser():
     parser = argparse.ArgumentParser()
     #parser.add_argument("-m", "--model-config", type=str, default="./configs/meta_learning/low_rank_modulated_meta/imagenette178_meta_low_rank.yaml")
     #parser.add_argument("-m", "--model-config", type=str,default="./configs/meta_learning/low_rank_modulated_meta/shapenet_meta.yaml")
-    parser.add_argument("-m", "--model-config", type=str,default="./config/imagenette178_low_rank_modulated_transinr.yaml")
+    parser.add_argument("-m", "--model-config", type=str,default="./config/shapenet_transinr.yaml")
     parser.add_argument("-r", "--result-path", type=str, default="./exp_week8/")
-    parser.add_argument("-t", "--task", type=str, default="ssdf_lr_1e-4")
+    parser.add_argument("-t", "--task", type=str, default="tsdf0.3_PE0")
 
-    #parser.add_argument("-l", "--load-path", type=str, default="exp_week7/shapenet_meta_sdf/tsdf0.3_PE6_2/epoch840_model.pt")
+    #parser.add_argument("-l", "--load-path", type=str, default="/home/umaru/PycharmProjects/meta_shaope/exp_week7/shapenet_meta_sdf/tsdf0.3_PE0_2/epoch740_model.pt")
     parser.add_argument("-l", "--load-path", type=str,default="")
     parser.add_argument("-p", "--postfix", type=str, default="")
     parser.add_argument("--seed", type=int, default=0)
@@ -91,6 +91,32 @@ if __name__ == "__main__":
     else:
         steps_per_epoch = math.ceil(len(dataset_trn) / (config.experiment.batch_size * distenv.world_size))
         steps_per_epoch = steps_per_epoch // config.optimizer.grad_accm_steps
+
+
+        # tmp patch
+
+        if config.type == 'overfit' and config.arch.type == 'low_rank_modulated_transinr':
+            model.init_factor_zero()
+            loader_trn = torch.utils.data.DataLoader(
+                dataset_trn,
+                # sampler=self.sampler_trn,
+                shuffle=True,
+                pin_memory=True,
+                batch_size=config.experiment.batch_size,
+                # num_workers=num_workers,
+            )
+            for xt in loader_trn:
+                if config.dataset.type == "shapenet":
+                    if config.dataset.supervision == 'sdf' or config.dataset.supervision == 'occ':
+                        coord_inputs = xt['coords'].to(device)
+
+                    elif config.dataset.supervision == 'siren_sdf':
+                        coords, xs = xt
+                        coord_inputs = coords['coords'].to(device)
+                model.init_factor(coord_inputs)
+                break
+
+
 
         optimizer = create_optimizer(model, config)
         scheduler = create_scheduler(
