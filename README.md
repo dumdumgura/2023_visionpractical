@@ -7,4 +7,11 @@
 
 ```
 
-2. Fill in the data_path in corresponding config files and start training
+2. Fill in the data_path in the corresponding config files and start training.
+```python
+   # for single shape overfitting 
+   python main_stage_inr.py -m=./config/shapenet_meta_sdf_overfit_.yaml -t=#TASK_NAME
+
+   # for meta_learning
+   python main_stage_inr.py -m=./config/shapenet_meta_sdf.yaml -t=#TASK_NAME
+```  
