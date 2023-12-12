@@ -209,7 +209,7 @@ class Pointcloud(Dataset):
         # TODO: Implement such that you return a pytorch float32 torch tensor of shape (self.num_sample_points, 4)
         # the returned tensor shoud have approximately self.num_sample_points/2 randomly selected samples from pos_tensor
         # and approximately self.num_sample_points/2 randomly selected samples from neg_tensor
-        return np.concatenate([pos_tensor_sel,neg_tensor_sel],axis=0)
+        return np.concatenate([neg_tensor_sel,pos_tensor_sel],axis=0)
 
 
 class ImageNette(Dataset):
