@@ -1,5 +1,5 @@
-#*.ply
-#*.npy
+*.ply
+*.npy
 .idea/
 exp_week8
 *.pyc
