@@ -2,29 +2,26 @@ type: generalize
 trainer: stage_inr
 dataset:
   type: shapenet
-  supervision: sdf  #siren/siren_sdf
-  folder: /home/umaru/PycharmProjects/meta_shaope/data/171shape_occ_sdf
+  supervision: sdf  #siren_sdf/sdf/occ
+  folder: ./data/sdf/single
+  #folder: /home/umaru/PycharmProjects/meta_shaope/data/171shape_occ_sdf
   transforms:
     type: shapenet
 
 arch: # needs to add encoder, modulation type
   type: meta_low_rank_modulated_inr
   ema: null
-
   rank: [128] # list, assert len(n_weight_groups) in [1, hyponet.n_layer]
   modulated_layer_idxs: [1,3]
   use_factorization: false
-
   n_inner_step: 4
   inner_lr: 0.003
-
 
   coord_sampler:
     data_type: image
     coord_range: [-1.0, 1.0]
     train_strategy: null
     val_strategy: null
-
 
   hyponet:
     type: mlp
@@ -35,9 +32,8 @@ arch: # needs to add encoder, modulation type
     output_dim: 2
     output_bias: 0.5 #0.5 essential for siren but why
 
-
     fourier_mapping:
-      type: PE #Gaussian
+      type: PE #Gaussianmx ^
       trainable: false
       use_ff: true # true
       ff_sigma: 0 # ff_dim = 2*ff_sigma *3 + (3)
@@ -90,5 +86,5 @@ experiment:
   epochs_cos: 30
   save_ckpt_freq: 20
   test_freq: 1
-  test_imlog_freq: 1
+  test_imlog_freq: 200
 

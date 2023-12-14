@@ -4,4 +4,4 @@
 exp_week8
 *.pyc
 .vscode/
-.wandb/
+wandb/

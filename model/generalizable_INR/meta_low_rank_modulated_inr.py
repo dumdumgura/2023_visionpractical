@@ -231,7 +231,9 @@ class MetaLowRankModulatedINR(TransINR):
 
             # compute gradient w.r.t. latents
             grads_list = torch.autograd.grad(metrics["loss_total"], modulation_factors_list, create_graph=True)
-
+            # siren sdf may not fit into memory, so we do not create graph
+            #grads_list = torch.autograd.grad(metrics["loss_total"], modulation_factors_list, create_graph=False)
+            
             # take an SGD step
             new_modulation_factors_dict = {}
             for i, pack in enumerate(zip(factor_names, modulation_factors_list, grads_list)):

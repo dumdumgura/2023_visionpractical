@@ -10,7 +10,7 @@
 2. Fill in the data_path in the corresponding config files and start training.
 ```python
    # for single shape overfitting 
-   python main_stage_inr.py -m=./config/shapenet_meta_sdf_overfit_.yaml -t=$EXP_NAME
+   python main_stage_inr.py -m=./config/shapenet_meta_sdf_overfit.yaml -t=$EXP_NAME
 
    # for meta_learning
    python main_stage_inr.py -m=./config/shapenet_meta_sdf.yaml -t=$EXP_NAME

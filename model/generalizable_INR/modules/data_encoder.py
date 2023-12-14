@@ -7,7 +7,7 @@ import torch.nn as nn
 import torchvision.transforms as T
 from ..modules.pointnet2_utils import PointNetSetAbstraction
 from .utils import convert_int_to_list
-import pyrender
+#import pyrender
 
 class Unfold1D(nn.Module):
     """unfold audio (3D tensor), where the channel dimension is one."""

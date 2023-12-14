@@ -3,7 +3,7 @@ trainer: stage_inr
 dataset:
   type: shapenet
   supervision: sdf  # sdf / occ / siren_sdf
-  folder: /home/umaru/PycharmProjects/meta_shaope/data/171shape_occ_sdf/train/1a04e3eab45ca15dd86060f189eb133.obj.npy
+  folder: ./data/sdf/train/1a9b552befd6306cc8f2d5fe7449af61.obj.npy
   #folder: /home/umaru/Downloads/happy_recon/happy_vrip_res4.xyz
   transforms:
     type: shapenet
@@ -59,7 +59,7 @@ loss:
   coord_noise: null
 
 optimizer:
-  type: overfit            # overfit / adam
+  type: adam            # overfit / adam
   init_lr: 0.001        # e1-4 for sirensdf  #5e-5 for sine   #1e-4 for bce loss
   weight_decay: 0.0000
 
@@ -68,7 +68,7 @@ optimizer:
     epoch: 0
     multiplier: 1
     buffer_epoch: 0
-    min_lr: 0.0001
+    min_lr: 0.001
     mode: adaptive
     step_size: 750
     gamma: 0.5
@@ -86,6 +86,6 @@ experiment:
   epochs: 100000
   epochs_cos: 30
   save_ckpt_freq: 200
-  test_freq: 30
+  test_freq: 50
   test_imlog_freq: 50
 

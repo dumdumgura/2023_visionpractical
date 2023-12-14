@@ -3,6 +3,7 @@ import math
 
 import torch
 import torch.distributed as dist
+import wandb
 
 import utils.dist as dist_utils
 
@@ -54,6 +55,17 @@ if __name__ == "__main__":
     args, extra_args = parse_args()
     set_seed(args.seed)
     config, logger, writer = setup(args, extra_args)
+    
+    #init wandb
+    run = wandb.init(
+    # Set the project where this run will be logged
+    project="ginr_simplified",
+    # Track hyperparameters and run metadata
+    config={
+        "init_lr": config.optimizer.init_lr,
+        "epochs": 10,
+    },  
+    )
 
     distenv = config.runtime.distenv
     profiler = Profiler(logger)
