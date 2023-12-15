@@ -1,6 +1,7 @@
 import os
 import logging
 import time
+import wandb
 
 import torch
 
@@ -22,6 +23,7 @@ class TrainerTemplate:
         device,
         distenv,
         model_aux=None,
+        wandb:wandb=None,
         **kwargs,
     ):
         super().__init__()
@@ -65,6 +67,8 @@ class TrainerTemplate:
         )
 
         self._scaler = None
+        
+        self.run = wandb
 
     def train(self, optimizer=None, scheduler=None, scaler=None, epoch=0):
         raise NotImplementedError
@@ -97,8 +101,8 @@ class TrainerTemplate:
 
             if self.distenv.master:
                 #logging: write summary and produce shape
-
                 self.logging(summary_trn, scheduler=scheduler, epoch=i + 1, mode="train")
+                self.run.log(summary_trn.metrics, step = i)
 
                 if self.config.type != 'overfit':
                     if i == 0 or (i + 1) % self.config.experiment.test_freq == 0:

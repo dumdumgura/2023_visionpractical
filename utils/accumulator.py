@@ -50,6 +50,7 @@ class AccmStageINR:
         vector_metric_names = ()
 
         def __init__(self, metrics):
+            self.metrics = metrics
             for key, value in metrics.items():
                 self[key] = value
 

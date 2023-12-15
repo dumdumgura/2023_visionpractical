@@ -14,6 +14,7 @@ from optimizer import create_optimizer, create_scheduler
 from utils.utils import set_seed
 from utils.profiler import Profiler
 from utils.setup import setup
+import yaml
 
 
 def default_parser():
@@ -58,13 +59,12 @@ if __name__ == "__main__":
     
     #init wandb
     run = wandb.init(
-    # Set the project where this run will be logged
-    project="ginr_simplified",
-    # Track hyperparameters and run metadata
-    config={
-        "init_lr": config.optimizer.init_lr,
-        "epochs": 10,
-    },  
+        # Set the project where this run will be logged
+        project = "ginr_simplified_2",
+        # Identifier for the current run
+        #notes = config.experiment.name,
+        # Track hyperparameters and run metadata
+        config = yaml.safe_load(open(args.model_config))
     )
 
     distenv = config.runtime.distenv
@@ -154,11 +154,13 @@ if __name__ == "__main__":
     #model = dist_utils.dataparallel_and_sync(distenv, model, static_graph=static_graph)
 
     trainer = create_trainer(config)
-    trainer = trainer(model, dataset_trn, dataset_val, config, writer, device, distenv)
+    trainer = trainer(model, dataset_trn, dataset_val, config, writer, device, distenv, wandb=run)
 
     if distenv.master:
         logger.info(f"Trainer created. type: {trainer.__class__}")
 
+    run.watch(model, log_freq=config.experiment.test_freq)
+    
     if args.eval:
         trainer.config.experiment.subsample_during_eval = False
         trainer.eval(valid=False, verbose=True)
