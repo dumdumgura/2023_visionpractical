@@ -159,7 +159,7 @@ if __name__ == "__main__":
     if distenv.master:
         logger.info(f"Trainer created. type: {trainer.__class__}")
 
-    run.watch(model, log_freq=config.experiment.test_freq)
+    run.watch(model, log_freq=config.experiment.test_freq, log="all")
     
     if args.eval:
         trainer.config.experiment.subsample_during_eval = False

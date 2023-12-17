@@ -95,18 +95,19 @@ class TrainerTemplate:
             if i == 0 or (i + 1) % self.config.experiment.test_freq == 0:
                 torch.cuda.empty_cache()
 
-                # do not validation for overfit process
+                # do not validate for overfit process
                 if self.config.type != 'overfit':
                     summary_val = self.eval(epoch=i)
 
             if self.distenv.master:
                 #logging: write summary and produce shape
                 self.logging(summary_trn, scheduler=scheduler, epoch=i + 1, mode="train")
-                self.run.log(summary_trn.metrics, step = i)
+                self.run.log({"train/metrics": summary_trn.metrics}, step = i)
 
                 if self.config.type != 'overfit':
                     if i == 0 or (i + 1) % self.config.experiment.test_freq == 0:
                         self.logging(summary_val, scheduler=scheduler, epoch=i + 1, mode="valid")
+                        self.run.log({"val/metrics": summary_val.metrics}, step = i)
 
                 # save ckpt
                 if (i + 1) % self.config.experiment.save_ckpt_freq == 0:

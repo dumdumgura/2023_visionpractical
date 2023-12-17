@@ -122,7 +122,10 @@ class Trainer(TrainerTemplate):
 
             ply_data = plyfile.PlyData([el_verts, el_faces])
             # logging.debug("saving mesh to %s" % (ply_filename_out))
-            ply_data.write("./ply/" + str(epoch) + "_" +str(mode)+"_"+ str(it*len(meshes)+k) + "_poly.ply")
+            ply_filename_out = "./ply/" + str(epoch) + "_" +str(mode)+"_"+ str(it*len(meshes)+k) + "_poly.ply"
+            ply_data.write(ply_filename_out)
+            
+            return ply_filename_out
 
    # @torch.no_grad()
     def eval(self, valid=True, ema=False, verbose=False, epoch=0):

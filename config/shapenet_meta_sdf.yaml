@@ -85,6 +85,6 @@ experiment:
   epochs: 10000
   epochs_cos: 30
   save_ckpt_freq: 20
-  test_freq: 1
-  test_imlog_freq: 200
+  test_freq: 5
+  test_imlog_freq: 10
 

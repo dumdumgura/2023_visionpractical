@@ -9,7 +9,9 @@ import plyfile
 
 from utils.accumulator import AccmStageINR
 from .trainer import TrainerTemplate
-
+from utils.utils import render_meshes, render_mesh
+import trimesh
+import wandb
 
 logger = logging.getLogger(__name__)
 
@@ -31,6 +33,9 @@ class Trainer(TrainerTemplate):
     @torch.no_grad()
 
     def reconstruct_shape(self,meshes,epoch,it=0,mode='train'):
+        ply_data_arr =  []
+        ply_filename_out_arr = []
+        
         for k in range(len(meshes)):
             # try writing to the ply file
             verts = meshes[k]['vertices']
@@ -59,7 +64,13 @@ class Trainer(TrainerTemplate):
 
             ply_data = plyfile.PlyData([el_verts, el_faces])
             # logging.debug("saving mesh to %s" % (ply_filename_out))
-            ply_data.write("./results.tmp/ply/" + str(epoch) + "_" +str(mode)+"_"+ str(it*len(meshes)+k) + "_poly.ply")
+            ply_filename_out = "./results.tmp/ply/" + str(epoch) + "_" +str(mode)+"_"+ str(it*len(meshes)+k) + "_poly.ply"
+            ply_data.write(ply_filename_out)
+            
+            ply_data_arr.append(ply_data)
+            ply_filename_out_arr.append(ply_filename_out)
+            
+        return ply_data_arr, ply_filename_out_arr
 
     def eval(self, valid=True, ema=False, verbose=False, epoch=0):
         model = self.model_ema if ema else self.model
@@ -255,8 +266,16 @@ class Trainer(TrainerTemplate):
 
                     vis = True
                     _, meshes, _ = model(xs, coord_inputs, is_training=False, vis=vis,type=self.config.dataset.supervision)
-                    self.reconstruct_shape(meshes,epoch,mode=mode)
-
+                    ply_data_arr, ply_filename_out_arr = self.reconstruct_shape(meshes,epoch,mode=mode)
+                    wandb_out_imgs = []
+                    for i, mesh_i in enumerate(meshes):
+                        trimesh_mesh_i = trimesh.Trimesh(mesh_i["vertices"], mesh_i["faces"])
+                        out_img_i, _ = render_mesh(trimesh_mesh_i)
+                        caption_i = ply_filename_out_arr[i].split('/')[-1]
+                        wandb_out_imgs.append(wandb.Image(out_img_i, caption=caption_i))
+                    self.run.log(
+                        {"val/generated_renders": wandb_out_imgs}, step=epoch
+                    )
                 else:
                     model = self.model
                     model.eval()
