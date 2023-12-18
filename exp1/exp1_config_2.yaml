@@ -3,7 +3,7 @@ trainer: stage_inr
 dataset:
   type: shapenet
   supervision: sdf
-  folder: ./data/sdf/single
+  folder: ./data/sdf/single2
   transforms:
     type: shapenet
 arch:

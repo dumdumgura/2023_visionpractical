@@ -1,0 +1,9 @@
+- experiment_name: exp1
+  dataset.folder: [./data/sdf/single, ./data/sdf/single2]
+
+- experiment_name: exp2
+  arch.modulated_layer_idxs: [[1,3], [2,4]]
+
+- experiment_name: exp3
+  dataset.folder: [./data/sdf/single, ./data/sdf/single2]
+  arch.modulated_layer_idxs: [[1,3], [2,4]]

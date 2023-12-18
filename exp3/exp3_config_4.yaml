@@ -3,7 +3,7 @@ trainer: stage_inr
 dataset:
   type: shapenet
   supervision: sdf
-  folder: ./data/sdf/single
+  folder: ./data/sdf/single2
   transforms:
     type: shapenet
 arch:
@@ -12,8 +12,8 @@ arch:
   rank:
   - 128
   modulated_layer_idxs:
-  - 1
-  - 3
+  - 2
+  - 4
   use_factorization: false
   n_inner_step: 4
   inner_lr: 0.003
