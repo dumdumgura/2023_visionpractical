@@ -25,6 +25,8 @@ class ModulatedParamsFactors(nn.Module):
         self,
         params_shape_dict,
         use_bias_in_hyponet,
+        share_bias_in_hyponet,
+        initialization_type,
         ranks,
         modulated_layer_idxs=None,
         use_factorization=True,
@@ -58,11 +60,20 @@ class ModulatedParamsFactors(nn.Module):
         self.shared_factors = nn.ParameterDict()
 
         for idx, (name, shape) in enumerate(params_shape_dict.items()):
+
+
             if idx not in modulated_layer_idxs:
                 continue
-            fan_in = (shape[0] - 1) if use_bias_in_hyponet else shape[0]
+
+            if use_bias_in_hyponet: # base param include bias
+                fan_in = (shape[0] - 1)
+            else:
+                fan_in = shape[0]
+
             fan_out = shape[1]
             rank = min(ranks[idx], fan_out)
+
+
 
             if use_factorization:
                 init_modulation_factor = torch.randn(fan_in, rank)
@@ -73,13 +84,35 @@ class ModulatedParamsFactors(nn.Module):
                 self.shared_factors[name] = nn.Parameter(init_shared_factor)
             else:
                 # rank is irrelevant in this case
-                init_modulation_factor = torch.randn(fan_in, fan_out) / np.sqrt(fan_in)
-                import math
-                w0 =30
-                w_std = math.sqrt(6.0 / fan_in) / w0
-                #init_modulation_factor = (torch.rand((fan_in, fan_out))*2*w_std-w_std)
+                #init_modulation_factor = torch.randn(fan_in, fan_out) / np.sqrt(fan_in)
+
+
+                # kaiming uniform
+                if initialization_type.weight_init_type== 'kaiming_uniform':
+                    bound = np.sqrt(3.0) / np.sqrt(fan_in)
+                    init_modulation_factor = torch.rand(fan_in, fan_out)*2*bound-bound
+
+                elif initialization_type.weight_init_type== 'siren':
+                    #siren
+                    if idx != 0:
+                        w0 =30
+                        w_std = np.sqrt(6.0 / fan_in) / w0
+                        init_modulation_factor = (torch.rand((fan_in, fan_out))*2*w_std-w_std)
+                    else:
+                        w_std = 1 / fan_in
+                        init_modulation_factor = (torch.rand((fan_in, fan_out)) * 2 * w_std - w_std)
+
+                else:
+                    print("Incorrect Initialization")
+
+
+                # initialize bias
+                if not share_bias_in_hyponet:
+                    init_bias = torch.zeros(1,fan_out)
+                    init_modulation_factor = torch.concatenate([init_modulation_factor,init_bias],dim=0)
                 self.init_modulation_factors[name] = nn.Parameter(init_modulation_factor)
                 self.shared_factors[name] = None
+
 
 
     def compute_modulation_params_dict(self, modulation_factors_dict):
@@ -138,17 +171,23 @@ class MetaLowRankModulatedINR(TransINR):
         self.config = config
         self.hyponet = HypoNet(config.hyponet)
 
+
+        # weight factors
         self.factors = ModulatedParamsFactors(
             self.hyponet.params_shape_dict,
             use_bias_in_hyponet=self.hyponet.use_bias,
+            share_bias_in_hyponet=self.hyponet.share_bias,
+            initialization_type= self.hyponet.init_config,
             ranks=config.rank,
             modulated_layer_idxs=config.modulated_layer_idxs,
             use_factorization=config.use_factorization,
         )
 
+
         for name in self.factors.modulated_param_names:
             # We always ignore base param so that each modulated weight W is directly computed
             self.hyponet.ignore_base_param_dict[name] = True
+
 
         self.n_inner_step = self.config.n_inner_step
         self.inner_lr = copy.copy(self.config.inner_lr)
@@ -192,14 +231,12 @@ class MetaLowRankModulatedINR(TransINR):
         #coord = self.sample_coord_input(xs) if coord is None else coord
 
         # convert modulation factors into modulation params
-        if overfit:
-            modulation_params_dict = modulation_factors_dict
-        else:
-            modulation_params_dict = self.factors.compute_modulation_params_dict(modulation_factors_dict)
+
+        modulation_params_dict = self.factors.compute_modulation_params_dict(modulation_factors_dict)
 
 
         meshes = create_meshes(
-                self.hyponet, modulation_params_dict,level=0.0, N=256,overfit=overfit,type=type
+                self.hyponet, modulation_params_dict, level=0.0, N=256,overfit=overfit,type=type
                 )
 
         return meshes
@@ -350,12 +387,12 @@ class MetaLowRankModulatedINR(TransINR):
     def overfit_one_shape(self, coord=None,type='occ'):
         modulation_factors_dict = self.get_init_modulation_factors_overfit()
         # convert modulation factors into modulation params
-        modulation_params_dict = self.factors.compute_modulation_params_dict_overfit(modulation_factors_dict)
 
         if coord is None:
-            visuals = self.decode_with_modulation_factors(modulation_params_dict, overfit=True,type=type)
+            visuals = self.decode_with_modulation_factors(modulation_factors_dict, overfit=True,type=type)
             return visuals
         else:
+            modulation_params_dict = self.factors.compute_modulation_params_dict_overfit(modulation_factors_dict)
             outputs = self.hyponet.forward_overfit(coord, modulation_params_dict=modulation_params_dict)
             return outputs
 

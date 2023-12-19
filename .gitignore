@@ -1,5 +1,9 @@
 *.ply
 *.npy
-.idea/
-exp_week8
 *.pyc
+.idea
+exp_week8
+exp_week9
+exp_week9_meta_bias
+exp_week9_overfit
+data

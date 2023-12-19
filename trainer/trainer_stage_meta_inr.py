@@ -59,7 +59,7 @@ class Trainer(TrainerTemplate):
 
             ply_data = plyfile.PlyData([el_verts, el_faces])
             # logging.debug("saving mesh to %s" % (ply_filename_out))
-            ply_data.write("./results.tmp/ply/" + str(epoch) + "_" +str(mode)+"_"+ str(it*len(meshes)+k) + "_poly.ply")
+            ply_data.write("./ply/" + str(epoch) + "_" +str(mode)+"_"+ str(it*len(meshes)+k) + "_poly.ply")
 
     def eval(self, valid=True, ema=False, verbose=False, epoch=0):
         model = self.model_ema if ema else self.model

@@ -97,10 +97,12 @@ class HypoNetInitConfig:
 
 @dataclass
 class HypoNetConfig:
+
     type: str = "mlp"
     n_layer: int = 5
     hidden_dim: List[int] = MISSING
     use_bias: bool = True
+    share_bias: bool = True
     input_dim: int = 2
     output_dim: int = 3
     output_bias: float = 0.5

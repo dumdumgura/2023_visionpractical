@@ -120,7 +120,7 @@ class Pointcloud(Dataset):
         split,
         type
     ):
-        self.batch =20000
+        self.batch =5000
 
         self.type = type
         if self.type =='sdf'or self.type =='occ':
