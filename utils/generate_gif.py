@@ -3,10 +3,10 @@ import os
 import glob
 
 # Parent folder containing image files
-parent_folder = "/home/umaru/praktikum/changed_version/ginr-ipc/results.tmp/ply/overfit_occ_sdf/occ_80_640"
+parent_folder = "/home/umaru/praktikum/changed_version/2023_visionpractical/exp_week9/results_2"
 
 # Output GIF file name
-output_gif = "/home/umaru/praktikum/changed_version/ginr-ipc/results.tmp/ply/overfit_occ_sdf/occ_80_640/output.gif"
+output_gif = "/home/umaru/praktikum/changed_version/2023_visionpractical/exp_week9/results_2/output.gif"
 
 # List all image files in the parent folder and its subdirectories
 image_paths = glob.glob(os.path.join(parent_folder, "*.png"), recursive=True)

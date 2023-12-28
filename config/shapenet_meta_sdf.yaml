@@ -12,7 +12,7 @@ arch: # needs to add encoder, modulation type
   ema: null
 
   rank: [128] # list, assert len(n_weight_groups) in [1, hyponet.n_layer]
-  modulated_layer_idxs: [0,1,2,3,4,5]
+  modulated_layer_idxs: [0,1,2,3]
   use_factorization: false
 
   n_inner_step: 4

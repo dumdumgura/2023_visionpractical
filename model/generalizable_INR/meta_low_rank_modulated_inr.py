@@ -98,9 +98,11 @@ class ModulatedParamsFactors(nn.Module):
                         w0 =30
                         w_std = np.sqrt(6.0 / fan_in) / w0
                         init_modulation_factor = (torch.rand((fan_in, fan_out))*2*w_std-w_std)
+                        init_bias = (torch.rand((1, fan_out)) * 2 * w_std - w_std)
                     else:
                         w_std = 1 / fan_in
                         init_modulation_factor = (torch.rand((fan_in, fan_out)) * 2 * w_std - w_std)
+                        init_bias = (torch.rand((1, fan_out)) * 2 * w_std - w_std)
 
                 else:
                     print("Incorrect Initialization")
@@ -108,7 +110,7 @@ class ModulatedParamsFactors(nn.Module):
 
                 # initialize bias
                 if not share_bias_in_hyponet:
-                    init_bias = torch.zeros(1,fan_out)
+
                     init_modulation_factor = torch.concatenate([init_modulation_factor,init_bias],dim=0)
                 self.init_modulation_factors[name] = nn.Parameter(init_modulation_factor)
                 self.shared_factors[name] = None

@@ -52,6 +52,22 @@ class LowRankModulatedTransINR(nn.Module):
         )
 
         self.num_group_total = self.weight_groups.num_group_total
+
+        self.group_modulation_postfc = nn.ModuleDict()
+        for name, shape in self.hyponet.params_shape_dict.items():
+            if name not in self.weight_groups.group_idx_dict:
+                continue
+            # if a weight matrix of hyponet is modulated, this model does not use `base_param` in the hyponet.
+            self.hyponet.ignore_base_param_dict[name] = True
+
+            postfc_input_dim = self.config.transformer.embed_dim
+            postfc_output_dim = 256
+            self.group_modulation_postfc[name] = nn.Sequential(
+                 nn.Linear(postfc_input_dim, postfc_output_dim)
+            )
+            nn.init.xavier_uniform_(self.group_modulation_postfc[name][0].weight.data)
+            nn.init.zeros_(self.group_modulation_postfc[name][0].bias)
+        '''
         self.shared_factor = nn.ParameterDict()
         self.group_modulation_postfc = nn.ModuleDict()
         for name, shape in self.hyponet.params_shape_dict.items():
@@ -73,6 +89,9 @@ class LowRankModulatedTransINR(nn.Module):
                 nn.LayerNorm(postfc_input_dim), nn.Linear(postfc_input_dim, postfc_output_dim)
             )
 
+        '''
+
+
     def _init_weights(self, module):
         if isinstance(module, nn.LayerNorm):
             module.bias.data.zero_()
@@ -91,37 +110,51 @@ class LowRankModulatedTransINR(nn.Module):
             outputs (torch.Tensor): `assert outputs.shape == xs.shape`
         """
         shape = xs[:, :, 0] if type == 'sdf' or type == 'occ' else xs['sdf'][..., 0]
+
+
+
         batch_size = shape.shape[0]
         #xs : B, input_dim, num_points
         num_onsurface = shape.shape[1]//2
-        xs_xyz,xs_emb = self.encode(coord[:,:num_onsurface,:]) #Batch,
+
+        normals = xs['normals'].to(coord.device)
+        #normals = xs[:,:,1:-1].float()
+        xyz = coord.detach().to(coord.device)
+
+        pc = torch.cat([xyz,normals],dim=-1)[:,:num_onsurface,:]
+        xs_xyz,xs_emb = self.encode(pc) #Batch,
+
+        print("xyz_emb"+str(xs_emb.norm()))
         #xs_latent = xs_emb
         xs_psenc = self.embedder.embed(xs_xyz)
 
-        xs_latent = torch.cat([xs_emb,xs_psenc],dim=2)
+        xs_latent = torch.cat([xs_emb,xs_psenc],dim=2)  #should represent the shape! (B, number, latent_dim)
 
         #xs_latent = self.encode_latent(xs_emb)  # latent mapping
         weight_token_input = self.weight_groups(batch_size=batch_size)  # (B, num_groups_total, embed_dim)
+        print("weight_token:"+ str(weight_token_input.norm(dim=[-1,-2]).mean()))
 
         transformer_input = torch.cat([xs_latent, weight_token_input], dim=1)
-
-        #transformer_input = torch.cat([weight_token_input])
 
         transformer_output = self.transformer(transformer_input)
 
         transformer_output_groups = transformer_output[:, -self.num_group_total :]
 
         # returns the weights for modulation of hypo-network
-        modulation_params_dict = self.predict_group_modulations(transformer_output_groups)
 
+        modulation_params_dict = self.predict_group_modulations(transformer_output_groups)
+        #modulation_params_dict = self.predict_group_modulations(weight_token_input)
         # predict all pixels of coord after applying the modulation_parms into hyponet
         outputs = self.hyponet(coord, modulation_params_dict=modulation_params_dict)
+
         #if keep_xs_shape:
         #    permute_idx_range = [i for i in range(1, xs.ndim - 1)]
         #    outputs = outputs.permute(0, -1, *permute_idx_range)
         if vis:
+
             visuals = self.decode_with_modulation_factors(modulation_params_dict, type=type)
             return visuals
+
         return outputs
 
 
@@ -143,16 +176,20 @@ class LowRankModulatedTransINR(nn.Module):
                 continue
             start_idx, end_idx = self.weight_groups.group_idx_dict[name]
             _group_output = group_output[:, start_idx:end_idx]
+            #_modulation = _group_output
+
 
             # post fc convert the transformer outputs into modulation weights
             _modulation = self.group_modulation_postfc[name](_group_output)  # (B, group_size, fan_in+fan_out)
 
-            _modulation_in = _modulation.transpose(-1, -2)  # (B, fan_in, group_size)
-            _modulation_out = self.shared_factor[name]  # (1, group_size, fan_out)
-            _modulation_out = _modulation_out.repeat(_modulation_in.shape[0], 1, 1)  # (B, group_size, fan_out)
+            #_modulation_in = _modulation.transpose(-1, -2)  # (B, fan_in, group_size)
+            #_modulation_out = self.shared_factor[name]  # (1, group_size, fan_out)
+            #_modulation_out = _modulation_out.repeat(_modulation_in.shape[0], 1, 1)  # (B, group_size, fan_out)
 
             # factorized matrix multiplication for weight modulation
-            _modulation = torch.bmm(_modulation_in, _modulation_out)  # (B, fan_in, fan_out)
+            #_modulation = torch.bmm(_modulation_in, _modulation_out)  # (B, fan_in, fan_out)
+            
+
             modulation_params_dict[name] = _modulation
         return modulation_params_dict
 
@@ -279,7 +316,7 @@ class LowRankModulatedTransINR(nn.Module):
                 grad_loss = grad_loss.mean()
                 off_surface_loss=off_surface_loss.mean()
 
-            total_loss = 3e3*sdf_loss + 3e3*off_surface_loss + 5e1* grad_loss + 1e2 * normal_loss
+            total_loss = 3e3*sdf_loss + 1e2*off_surface_loss + 5e1* grad_loss + 1e2 * normal_loss
             psnr = -10 * torch.log10(total_loss)
 
         elif type == 'occ':

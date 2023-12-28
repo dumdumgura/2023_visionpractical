@@ -1,6 +1,6 @@
 import einops
 import torch.nn as nn
-
+import torch
 from .utils import create_params_with_init
 
 
@@ -37,17 +37,22 @@ class WeightGroups(nn.Module):
             if idx not in modulated_layer_idxs:
                 continue
             params_shape = params_shape_dict[name]
-            num_groups = min(_num_groups[idx], params_shape[1])
-            assert params_shape[1] % num_groups == 0
+            num_groups = min(_num_groups[idx], params_shape[0])
+            assert params_shape[0] % num_groups == 0
 
             end_idx = end_idx + num_groups
             self.num_group_total += num_groups
             self.num_groups_dict[name] = num_groups
             self.group_idx_dict[name] = (start_idx, end_idx)
-            self.num_vectors_per_group_dict[name] = params_shape[1] // num_groups
+            self.num_vectors_per_group_dict[name] = params_shape[0] // num_groups
             start_idx = end_idx
 
-        weight_groups = create_params_with_init(shape=[self.num_group_total, weight_dim], init_type="normal")
+        #weight_groups = create_params_with_init(shape=[self.num_group_total, weight_dim], init_type="normal")  #128 * 128
+        weight_groups_w = create_params_with_init(shape=[self.num_group_total-1, weight_dim], type='weight',init_type="siren",siren_w0=30,is_first=False)
+        weight_groups_b = create_params_with_init(shape=[1, weight_dim], type='bias',
+                                                init_type="siren", siren_w0=30, is_first=False)
+
+        weight_groups=torch.cat([weight_groups_w,weight_groups_b],dim=0)
         self.weight_groups = nn.Parameter(weight_groups)
 
         # test:

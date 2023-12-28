@@ -333,9 +333,9 @@ class HypoNet(nn.Module):
 
                 if self.ignore_base_param_dict[param_key]:
                     base_param_w = 1.
-                    #print("modulated_layer" + str(idx) + ": " + str(modulation_param.norm()))
+                    print("modulated_layer" + str(idx) + ": " + str(modulation_param.norm()))
                 else:
-                    #print("base_layer" + str(idx) + ": " + str(base_param_w.norm()))
+                    print("base_layer" + str(idx) + ": " + str(base_param_w.norm()))
                     pass
 
                 param_w = base_param_w * modulation_param
@@ -352,9 +352,9 @@ class HypoNet(nn.Module):
 
                 if self.ignore_base_param_dict[param_key]:
                     base_param = 1.
-                    # print("modulated_layer" + str(idx) + ": " + str(modulation_param.norm()))
+                    print("modulated_layer" + str(idx) + ": " + str(modulation_param.norm()))
                 else:
-                    # print("base_layer" + str(idx) + ": " + str(base_param_w.norm()))
+                    print("base_layer" + str(idx) + ": " + str(base_param.norm()))
                     pass
 
                 if self.normalize_weight and self.ff_config.type != 'siren':

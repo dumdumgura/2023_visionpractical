@@ -19,9 +19,9 @@ def default_parser():
     parser = argparse.ArgumentParser()
     #parser.add_argument("-m", "--model-config", type=str, default="./configs/meta_learning/low_rank_modulated_meta/imagenette178_meta_low_rank.yaml")
     #parser.add_argument("-m", "--model-config", type=str,default="./configs/meta_learning/low_rank_modulated_meta/shapenet_meta.yaml")
-    parser.add_argument("-m", "--model-config", type=str,default="./config/shapenet_meta_sdf.yaml")
-    parser.add_argument("-r", "--result-path", type=str, default="./exp_week9_meta_bias/")
-    parser.add_argument("-t", "--task", type=str, default="test_1")
+    parser.add_argument("-m", "--model-config", type=str,default="./config/shapenet_transinr.yaml")
+    parser.add_argument("-r", "--result-path", type=str, default="./exp_week9_meta_transinr/")
+    parser.add_argument("-t", "--task", type=str, default="test_19")
 
     #parser.add_argument("-l", "--load-path", type=str, default="/home/umaru/praktikum/changed_version/2023_visionpractical/exp_week9_meta_bias/shapenet_meta_sdf/ssdf_1/epoch2000_model.pt")
     parser.add_argument("-l", "--load-path", type=str,default="")

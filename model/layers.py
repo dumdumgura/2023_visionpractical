@@ -1,6 +1,6 @@
 import math
 from typing import Iterable
-
+import torch.nn.init
 import torch
 from torch import nn
 from torch.nn import functional as F
@@ -166,12 +166,16 @@ class AttentionBlock(nn.Module):
         )
         self._cache = None
 
+        torch.nn.init.zeros_(self.mlp[2].weight)
+        torch.nn.init.zeros_(self.mlp[2].bias)
+
+
     def forward(self, x, contexts=None):
         attn = self.attn(self.ln1(x), contexts=contexts)
-
-        x = x + attn
-        x = x + self.mlp(self.ln2(x))
-
+        #x = attn
+        mlp = self.mlp(attn)
+        #print('mlp_norm:' + str(mlp.norm()))
+        x = x + mlp
         return x
 
     def cached_forward(self, x_present, contexts=None):

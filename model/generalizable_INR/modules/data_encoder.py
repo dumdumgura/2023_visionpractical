@@ -62,33 +62,75 @@ class Pointnet2(nn.Module):
         super(Pointnet2, self).__init__()
         in_channel = 6 if normal_channel else 3
         self.normal_channel = normal_channel
-
-        self.sa1 = PointNetSetAbstraction(npoint=512, radius=0.025, nsample=32, in_channel=in_channel, mlp=[64, 64, 128], group_all=False)
-        self.sa2 = PointNetSetAbstraction(npoint=256, radius=0.05, nsample=64, in_channel=128 + 3, mlp=[128, 128, 285], group_all=False)
+        self.ln1 = nn.LayerNorm(181)
+        self.sa1 = PointNetSetAbstraction(npoint=2048, radius=0.0025, nsample=32, in_channel=in_channel, mlp=[128], group_all=False)
+        self.sa2 = PointNetSetAbstraction(npoint=256, radius=0.005, nsample=16, in_channel=128 + 3, mlp=[693], group_all=False)
+        #self.sa3 = PointNetSetAbstraction(npoint=128, radius=0.05, nsample=64, in_channel=128 + 3, mlp=[181, 256, 256],
+        #                                  group_all=True)
+        #self.mlp = nn.Linear(181,181)
+        #nn.init.zeros_(self.mlp.weight)
+        #nn.init.zeros_(self.mlp.bias)
         #self.sa3 = PointNetSetAbstraction(npoint=None, radius=None, nsample=None, in_channel=256 + 3, mlp=[256, 512, 1024], group_all=True)
+        print("param:"+str(self.parameters))
 
-    def draw_point_cloud(self,points):
-        cloud = pyrender.Mesh.from_points(points)
+    def draw_point_cloud(self,points,colors):
+        cloud = pyrender.Mesh.from_points(points,colors)
         scene = pyrender.Scene()
         scene.add(cloud)
-        viewer = pyrender.Viewer(scene, use_raymond_lighting=True, point_size=3)
+        viewer = pyrender.Viewer(scene, use_raymond_lighting=True, point_size=10)
 
     def forward(self, xyz):  # B,spatial, ?
         B, _, _ = xyz.shape
         if self.normal_channel:
-            norm = xyz[:, 3:, :]
-            xyz = xyz[:, :3, :]
+            norm = xyz[:, :, 3:]
+            xyz = xyz[:, :, :3]
         else:
             norm = None
 
         xyz =  xyz.permute(0, 2, 1).contiguous()
-        #self.draw_point_cloud(xyz.permute(0, 2, 1).contiguous()[0].cpu().detach())
+        norm = norm.permute(0, 2, 1).contiguous()
+        #self.draw_point_cloud(xyz.permute(0, 2, 1).contiguous()[0].cpu().detach(), norm.permute(0, 2, 1).contiguous()[0].cpu().detach())
         l1_xyz, l1_points = self.sa1(xyz, norm)
-        #self.draw_point_cloud(l1_xyz.permute(0, 2, 1).contiguous()[0].cpu().detach())
+
+        #self.draw_point_cloud(l1_xyz.permute(0, 2, 1).contiguous()[0].cpu().detach(), l1_points.permute(0, 2, 1).contiguous()[0][:,3:].cpu().detach())
         l2_xyz, l2_points = self.sa2(l1_xyz, l1_points)
+        #self.draw_point_cloud(l2_xyz.permute(0, 2, 1).contiguous()[0].cpu().detach(),l2_points.permute(0, 2, 1).contiguous()[0][:, 6:].cpu().detach())
+        #l3_xyz, l3_points = self.sa3(l2_xyz, l2_points)
+        #print("l2_points:"+str(l2_points.norm()))
+        #print("weight:"+str(self.mlp.weight.norm()))
+
+        #l2_points = self.mlp(l2_points.permute(0, 2, 1).contiguous()).permute(0, 2, 1).contiguous()
         #self.draw_point_cloud(l2_xyz.permute(0, 2, 1).contiguous()[0].cpu().detach())
 
         return l2_xyz.permute(0, 2, 1).contiguous(), l2_points.permute(0, 2, 1).contiguous()
+
+import torch.nn.functional as F
+class DataDecoder(nn.Module):
+    def __init__(self, latent_dim, coordinate_dim, hidden_dim=128):
+        super(DataDecoder, self).__init__()
+
+        self.latent_dim = latent_dim
+        self.coordinate_dim = coordinate_dim
+        self.hidden_dim = hidden_dim
+
+        # Define layers
+        self.fc1 = nn.Linear(latent_dim + coordinate_dim, hidden_dim)
+        self.fc2 = nn.Linear(hidden_dim, hidden_dim)
+        self.fc3 = nn.Linear(hidden_dim, hidden_dim)
+        self.fc4 = nn.Linear(hidden_dim, 1)  # Output layer with 1 neuron for SDF
+
+    def forward(self, latent_code, coordinate):
+        # Concatenate latent code and coordinate
+        x = torch.cat([latent_code, coordinate], dim=1)
+
+        # Pass through the network
+        x = F.relu(self.fc1(x))
+        x = F.relu(self.fc2(x))
+        x = F.relu(self.fc3(x))
+        sdf_output = self.fc4(x)
+
+        return sdf_output
+
 
 
 class DataEncoder(nn.Module):
@@ -116,7 +158,7 @@ class DataEncoder(nn.Module):
             self.is_encoder_out_channels_last = True
 
         elif self.type == "PointNet2":
-            self.encoder = Pointnet2(normal_channel=False)
+            self.encoder = Pointnet2(normal_channel=True)
             self.output_dim = 256
             self.is_encoder_out_channels_last = True
 
@@ -127,6 +169,7 @@ class DataEncoder(nn.Module):
         if not self.trainable:
             for p in self.parameters():
                 p.requires_grad_(False)
+                print('do not requrie grad')
 
     def forward(self, xs, put_channels_last=False):
         xs_coord, xs_embed = self.encoder(xs)

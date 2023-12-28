@@ -2,8 +2,8 @@ type: overfit
 trainer: stage_inr
 dataset:
   type: shapenet
-  supervision: sdf  # sdf / occ / siren_sdf
-  folder: /home/umaru/praktikum/changed_version/2023_visionpractical/data/1e9ef313876bfba7d02c6d35cc802839.obj.npy
+  supervision: siren_sdf  # sdf / occ / siren_sdf
+  folder: /home/umaru/PycharmProjects/meta_shaope/data/171shape_resize/train/1b0b1d2cb9f9d5c0575bd26acccafabd.obj.npy
   #folder: /home/umaru/PycharmProjects/meta_shaope/data/171shape_occ_sdf/val/1a6ad7a24bb89733f412783097373bdc.obj.npy
   #folder: /home/umaru/Downloads/happy_recon/happy_vrip_res4.xyz
   #1b0b1d2cb9f9d5c0575bd26acccafabd.obj.npy
@@ -37,22 +37,22 @@ arch: # needs to add encoder, modulation type
     use_bias: true
     input_dim: 3
     output_dim: 2
-    output_bias: 0.5  #0.5 ,0 for siren
+    output_bias: 0  #0.5 ,0 for siren
 
     fourier_mapping:
-      type: PE   # PE / Gaussian / siren equal None
+      type: siren   # PE / Gaussian / siren equal None
       trainable: false
-      use_ff: true  # has to be false when using siren
+      use_ff: false  # has to be false when using siren
       ff_sigma: 0  # ff_dim = 2*ff_sigma *3 + (3)
       ff_dim: 3 # number of next channel / number of gaussians
 
     activation:
-      type: relu  # siren
-      siren_w0: null  #30 for siren
+      type: siren  # siren
+      siren_w0: 30  #30 for siren
 
     initialization:
-      weight_init_type: kaiming_uniform  #siren
-      bias_init_type: zero  # zero/siren
+      weight_init_type: siren  #siren
+      bias_init_type: siren  # zero/siren
 
     normalize_weight: true
 
@@ -65,7 +65,7 @@ loss:
 
 optimizer:
   type: overfit            # overfit / adam
-  init_lr: 0.001        # e1-4 for sirensdf  #5e-5 for sine   #1e-4 for bce loss
+  init_lr: 0.0001        # e1-4 for sirensdf  #5e-5 for sine   #1e-4 for bce loss
   weight_decay: 0.0000
 
   betas: [0.9, 0.95] #[0.9, 0.95]
@@ -73,7 +73,7 @@ optimizer:
     epoch: 0
     multiplier: 1
     buffer_epoch: 0
-    min_lr: 0.001
+    min_lr: 0.0001
     mode: adaptive
     step_size: 750
     gamma: 0.5
@@ -92,5 +92,5 @@ experiment:
   epochs_cos: 30
   save_ckpt_freq: 2000
   test_freq: 30
-  test_imlog_freq: 1000
+  test_imlog_freq: 100
 

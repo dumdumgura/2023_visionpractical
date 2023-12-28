@@ -1,0 +1,1736 @@
+12/28/2023 20:18:47 - INFO - main_stage_inr.py -   DistEnv(world_size=1, world_rank=0, local_rank=0, num_gpus=1, master=True, device_name='NVIDIA GeForce RTX 3060 Laptop GPU')
+12/28/2023 20:18:47 - INFO - main_stage_inr.py -   log_path: /home/umaru/praktikum/changed_version/2023_visionpractical/exp_week9_meta_transinr/shapenet_transinr/test_13
+12/28/2023 20:18:47 - INFO - main_stage_inr.py -   
+arch:
+  type: low_rank_modulated_transinr
+  ema: null
+  data_encoder:
+    type: PointNet2
+    n_channel: 3
+    trainable: true
+    encoder_spec:
+      patch_size: 9
+      padding: 1
+  latent_mapping:
+    type: linear
+    n_patches: 500
+    n_layer: 1
+    activation: relu
+    hidden_dim:
+    - 256
+    latent_dim: 768
+    use_pe: true
+  transformer:
+    n_layer: 8
+    embed_dim: 256
+    mask: false
+    block:
+      embed_dim: 256
+      n_head: 32
+      mlp_bias: true
+      attn_bias: true
+      attn_pdrop: 0.0
+      resid_pdrop: 0.1
+      gelu: v1
+  hyponet:
+    type: mlp
+    n_layer: 6
+    hidden_dim:
+    - 256
+    use_bias: true
+    share_bias: false
+    input_dim: 3
+    output_dim: 2
+    output_bias: 0.0
+    fourier_mapping:
+      type: siren
+      trainable: false
+      use_ff: false
+      ff_sigma: 0
+      ff_dim: 0
+    activation:
+      type: siren
+      siren_w0: 30.0
+    initialization:
+      weight_init_type: siren
+      bias_init_type: siren
+    normalize_weight: true
+  coord_sampler:
+    data_type: image
+    coord_range:
+    - -1.0
+    - 1.0
+    train_strategy: null
+    val_strategy: null
+  n_weight_groups:
+  - 257
+  modulated_layer_idxs:
+  - 1
+dataset:
+  transforms:
+    type: shapenet
+  type: shapenet
+  supervision: siren_sdf
+  folder: /home/umaru/PycharmProjects/meta_shaope/data/1shape
+optimizer:
+  type: adam_hyper
+  max_gn: null
+  warmup:
+    mode: adaptive
+    start_from_zero: true
+    epoch: 0
+    multiplier: 1
+    buffer_epoch: 0
+    step_size: 1000
+    min_lr: 0.0001
+    patience_adaptive: 20000
+    factor: 0.9
+    threshold: 0
+  init_lr: 0.0001
+  weight_decay: 0.0
+  betas:
+  - 0.9
+  - 0.999
+  grad_accm_steps: 1
+experiment:
+  test_freq: 1
+  amp: true
+  batch_size: 2
+  total_batch_size: 2
+  epochs_cos: 30
+  epochs: 40000
+  save_ckpt_freq: 500
+  test_imlog_freq: 100
+loss:
+  type: mse
+  subsample:
+    type: null
+    ratio: 0.1
+  coord_noise: coordwise
+type: generalization
+trainer: stage_inr
+seed: 0
+runtime:
+  args:
+    model_config: /home/umaru/praktikum/changed_version/2023_visionpractical/config/shapenet_transinr.yaml
+    result_path: /home/umaru/praktikum/changed_version/2023_visionpractical/exp_week9_meta_transinr
+    task: test_13
+    load_path: ''
+    postfix: ''
+    seed: 0
+    eval: false
+    resume: false
+    world_size: 1
+    local_rank: 0
+    node_rank: 0
+    nnodes: 1
+    nproc_per_node: 1
+    dist_backend: nccl
+    timeout: 1
+    rank: 0
+  extra_config: {}
+  distenv:
+    world_size: 1
+    world_rank: 0
+    local_rank: 0
+    num_gpus: 1
+    master: true
+    device_name: NVIDIA GeForce RTX 3060 Laptop GPU
+result_path: /home/umaru/praktikum/changed_version/2023_visionpractical/exp_week9_meta_transinr/shapenet_transinr/test_13
+
+12/28/2023 20:18:47 - INFO - main_stage_inr.py -   #train samples: 25, #valid samples: 2
+12/28/2023 20:18:48 - INFO - main_stage_inr.py -   [OPTION: ALL] #parameters: 7.3014M
+12/28/2023 20:18:48 - INFO - main_stage_inr.py -   [OPTION: trainable-only] #parameters: 7.3014M
+12/28/2023 20:18:48 - INFO - main_stage_inr.py -   Trainer created. type: <class 'trainer.trainer_stage_inr.Trainer'>
+12/28/2023 20:18:53 - INFO - trainer.trainer_stage_inr -   ep:1, train     , loss_total: 2512.7705, mse: 0.0000, psnr: 0.0000, onsurface_loss: 23.0681, spatial_loss: 0.0000, grad_loss: 2423.1228, normal_loss: 49.9963, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 497.4957, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:18:53 - INFO - trainer.trainer_stage_inr -   ep:1, valid     , loss_total: 875.6415, mse: 0.0000, psnr: 0.0000, onsurface_loss: 10.3535, spatial_loss: 0.0000, grad_loss: 832.1116, normal_loss: 24.6477, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 255.8625, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:19:46 - INFO - main_stage_inr.py -   DistEnv(world_size=1, world_rank=0, local_rank=0, num_gpus=1, master=True, device_name='NVIDIA GeForce RTX 3060 Laptop GPU')
+12/28/2023 20:19:46 - INFO - main_stage_inr.py -   log_path: /home/umaru/praktikum/changed_version/2023_visionpractical/exp_week9_meta_transinr/shapenet_transinr/test_13
+12/28/2023 20:19:46 - INFO - main_stage_inr.py -   
+arch:
+  type: low_rank_modulated_transinr
+  ema: null
+  data_encoder:
+    type: PointNet2
+    n_channel: 3
+    trainable: true
+    encoder_spec:
+      patch_size: 9
+      padding: 1
+  latent_mapping:
+    type: linear
+    n_patches: 500
+    n_layer: 1
+    activation: relu
+    hidden_dim:
+    - 256
+    latent_dim: 768
+    use_pe: true
+  transformer:
+    n_layer: 4
+    embed_dim: 256
+    mask: false
+    block:
+      embed_dim: 256
+      n_head: 32
+      mlp_bias: true
+      attn_bias: true
+      attn_pdrop: 0.0
+      resid_pdrop: 0.1
+      gelu: v1
+  hyponet:
+    type: mlp
+    n_layer: 6
+    hidden_dim:
+    - 256
+    use_bias: true
+    share_bias: false
+    input_dim: 3
+    output_dim: 2
+    output_bias: 0.0
+    fourier_mapping:
+      type: siren
+      trainable: false
+      use_ff: false
+      ff_sigma: 0
+      ff_dim: 0
+    activation:
+      type: siren
+      siren_w0: 30.0
+    initialization:
+      weight_init_type: siren
+      bias_init_type: siren
+    normalize_weight: true
+  coord_sampler:
+    data_type: image
+    coord_range:
+    - -1.0
+    - 1.0
+    train_strategy: null
+    val_strategy: null
+  n_weight_groups:
+  - 257
+  modulated_layer_idxs:
+  - 1
+dataset:
+  transforms:
+    type: shapenet
+  type: shapenet
+  supervision: siren_sdf
+  folder: /home/umaru/PycharmProjects/meta_shaope/data/1shape
+optimizer:
+  type: adam_hyper
+  max_gn: null
+  warmup:
+    mode: adaptive
+    start_from_zero: true
+    epoch: 0
+    multiplier: 1
+    buffer_epoch: 0
+    step_size: 1000
+    min_lr: 0.0001
+    patience_adaptive: 20000
+    factor: 0.9
+    threshold: 0
+  init_lr: 0.0001
+  weight_decay: 0.0
+  betas:
+  - 0.9
+  - 0.999
+  grad_accm_steps: 1
+experiment:
+  test_freq: 1
+  amp: true
+  batch_size: 2
+  total_batch_size: 2
+  epochs_cos: 30
+  epochs: 40000
+  save_ckpt_freq: 500
+  test_imlog_freq: 100
+loss:
+  type: mse
+  subsample:
+    type: null
+    ratio: 0.1
+  coord_noise: coordwise
+type: generalization
+trainer: stage_inr
+seed: 0
+runtime:
+  args:
+    model_config: /home/umaru/praktikum/changed_version/2023_visionpractical/config/shapenet_transinr.yaml
+    result_path: /home/umaru/praktikum/changed_version/2023_visionpractical/exp_week9_meta_transinr
+    task: test_13
+    load_path: ''
+    postfix: ''
+    seed: 0
+    eval: false
+    resume: false
+    world_size: 1
+    local_rank: 0
+    node_rank: 0
+    nnodes: 1
+    nproc_per_node: 1
+    dist_backend: nccl
+    timeout: 1
+    rank: 0
+  extra_config: {}
+  distenv:
+    world_size: 1
+    world_rank: 0
+    local_rank: 0
+    num_gpus: 1
+    master: true
+    device_name: NVIDIA GeForce RTX 3060 Laptop GPU
+result_path: /home/umaru/praktikum/changed_version/2023_visionpractical/exp_week9_meta_transinr/shapenet_transinr/test_13
+
+12/28/2023 20:19:46 - INFO - main_stage_inr.py -   #train samples: 25, #valid samples: 2
+12/28/2023 20:19:47 - INFO - main_stage_inr.py -   [OPTION: ALL] #parameters: 4.1423M
+12/28/2023 20:19:47 - INFO - main_stage_inr.py -   [OPTION: trainable-only] #parameters: 4.1423M
+12/28/2023 20:19:47 - INFO - main_stage_inr.py -   Trainer created. type: <class 'trainer.trainer_stage_inr.Trainer'>
+12/28/2023 20:20:46 - INFO - main_stage_inr.py -   DistEnv(world_size=1, world_rank=0, local_rank=0, num_gpus=1, master=True, device_name='NVIDIA GeForce RTX 3060 Laptop GPU')
+12/28/2023 20:20:46 - INFO - main_stage_inr.py -   log_path: /home/umaru/praktikum/changed_version/2023_visionpractical/exp_week9_meta_transinr/shapenet_transinr/test_13
+12/28/2023 20:20:46 - INFO - main_stage_inr.py -   
+arch:
+  type: low_rank_modulated_transinr
+  ema: null
+  data_encoder:
+    type: PointNet2
+    n_channel: 3
+    trainable: true
+    encoder_spec:
+      patch_size: 9
+      padding: 1
+  latent_mapping:
+    type: linear
+    n_patches: 500
+    n_layer: 1
+    activation: relu
+    hidden_dim:
+    - 256
+    latent_dim: 768
+    use_pe: true
+  transformer:
+    n_layer: 4
+    embed_dim: 256
+    mask: false
+    block:
+      embed_dim: 256
+      n_head: 32
+      mlp_bias: true
+      attn_bias: true
+      attn_pdrop: 0.0
+      resid_pdrop: 0.1
+      gelu: v1
+  hyponet:
+    type: mlp
+    n_layer: 6
+    hidden_dim:
+    - 256
+    use_bias: true
+    share_bias: false
+    input_dim: 3
+    output_dim: 2
+    output_bias: 0.0
+    fourier_mapping:
+      type: siren
+      trainable: false
+      use_ff: false
+      ff_sigma: 0
+      ff_dim: 0
+    activation:
+      type: siren
+      siren_w0: 30.0
+    initialization:
+      weight_init_type: siren
+      bias_init_type: siren
+    normalize_weight: true
+  coord_sampler:
+    data_type: image
+    coord_range:
+    - -1.0
+    - 1.0
+    train_strategy: null
+    val_strategy: null
+  n_weight_groups:
+  - 257
+  modulated_layer_idxs:
+  - 1
+dataset:
+  transforms:
+    type: shapenet
+  type: shapenet
+  supervision: siren_sdf
+  folder: /home/umaru/PycharmProjects/meta_shaope/data/1shape
+optimizer:
+  type: adam_hyper
+  max_gn: null
+  warmup:
+    mode: adaptive
+    start_from_zero: true
+    epoch: 0
+    multiplier: 1
+    buffer_epoch: 0
+    step_size: 1000
+    min_lr: 0.0001
+    patience_adaptive: 20000
+    factor: 0.9
+    threshold: 0
+  init_lr: 0.0001
+  weight_decay: 0.0
+  betas:
+  - 0.9
+  - 0.999
+  grad_accm_steps: 1
+experiment:
+  test_freq: 1
+  amp: true
+  batch_size: 2
+  total_batch_size: 2
+  epochs_cos: 30
+  epochs: 40000
+  save_ckpt_freq: 500
+  test_imlog_freq: 100
+loss:
+  type: mse
+  subsample:
+    type: null
+    ratio: 0.1
+  coord_noise: coordwise
+type: generalization
+trainer: stage_inr
+seed: 0
+runtime:
+  args:
+    model_config: /home/umaru/praktikum/changed_version/2023_visionpractical/config/shapenet_transinr.yaml
+    result_path: /home/umaru/praktikum/changed_version/2023_visionpractical/exp_week9_meta_transinr
+    task: test_13
+    load_path: ''
+    postfix: ''
+    seed: 0
+    eval: false
+    resume: false
+    world_size: 1
+    local_rank: 0
+    node_rank: 0
+    nnodes: 1
+    nproc_per_node: 1
+    dist_backend: nccl
+    timeout: 1
+    rank: 0
+  extra_config: {}
+  distenv:
+    world_size: 1
+    world_rank: 0
+    local_rank: 0
+    num_gpus: 1
+    master: true
+    device_name: NVIDIA GeForce RTX 3060 Laptop GPU
+result_path: /home/umaru/praktikum/changed_version/2023_visionpractical/exp_week9_meta_transinr/shapenet_transinr/test_13
+
+12/28/2023 20:20:46 - INFO - main_stage_inr.py -   #train samples: 25, #valid samples: 2
+12/28/2023 20:20:50 - INFO - main_stage_inr.py -   [OPTION: ALL] #parameters: 4.1423M
+12/28/2023 20:20:50 - INFO - main_stage_inr.py -   [OPTION: trainable-only] #parameters: 4.1423M
+12/28/2023 20:20:50 - INFO - main_stage_inr.py -   Trainer created. type: <class 'trainer.trainer_stage_inr.Trainer'>
+12/28/2023 20:22:30 - INFO - main_stage_inr.py -   DistEnv(world_size=1, world_rank=0, local_rank=0, num_gpus=1, master=True, device_name='NVIDIA GeForce RTX 3060 Laptop GPU')
+12/28/2023 20:22:30 - INFO - main_stage_inr.py -   log_path: /home/umaru/praktikum/changed_version/2023_visionpractical/exp_week9_meta_transinr/shapenet_transinr/test_13
+12/28/2023 20:22:30 - INFO - main_stage_inr.py -   
+arch:
+  type: low_rank_modulated_transinr
+  ema: null
+  data_encoder:
+    type: PointNet2
+    n_channel: 3
+    trainable: true
+    encoder_spec:
+      patch_size: 9
+      padding: 1
+  latent_mapping:
+    type: linear
+    n_patches: 500
+    n_layer: 1
+    activation: relu
+    hidden_dim:
+    - 256
+    latent_dim: 768
+    use_pe: true
+  transformer:
+    n_layer: 4
+    embed_dim: 256
+    mask: false
+    block:
+      embed_dim: 256
+      n_head: 32
+      mlp_bias: true
+      attn_bias: true
+      attn_pdrop: 0.0
+      resid_pdrop: 0.1
+      gelu: v1
+  hyponet:
+    type: mlp
+    n_layer: 6
+    hidden_dim:
+    - 256
+    use_bias: true
+    share_bias: false
+    input_dim: 3
+    output_dim: 2
+    output_bias: 0.0
+    fourier_mapping:
+      type: siren
+      trainable: false
+      use_ff: false
+      ff_sigma: 0
+      ff_dim: 0
+    activation:
+      type: siren
+      siren_w0: 30.0
+    initialization:
+      weight_init_type: siren
+      bias_init_type: siren
+    normalize_weight: true
+  coord_sampler:
+    data_type: image
+    coord_range:
+    - -1.0
+    - 1.0
+    train_strategy: null
+    val_strategy: null
+  n_weight_groups:
+  - 257
+  modulated_layer_idxs:
+  - 1
+dataset:
+  transforms:
+    type: shapenet
+  type: shapenet
+  supervision: siren_sdf
+  folder: /home/umaru/PycharmProjects/meta_shaope/data/1shape
+optimizer:
+  type: adam_hyper
+  max_gn: null
+  warmup:
+    mode: adaptive
+    start_from_zero: true
+    epoch: 0
+    multiplier: 1
+    buffer_epoch: 0
+    step_size: 1000
+    min_lr: 0.0001
+    patience_adaptive: 20000
+    factor: 0.9
+    threshold: 0
+  init_lr: 0.0001
+  weight_decay: 0.0
+  betas:
+  - 0.9
+  - 0.999
+  grad_accm_steps: 1
+experiment:
+  test_freq: 1
+  amp: true
+  batch_size: 2
+  total_batch_size: 2
+  epochs_cos: 30
+  epochs: 40000
+  save_ckpt_freq: 500
+  test_imlog_freq: 100
+loss:
+  type: mse
+  subsample:
+    type: null
+    ratio: 0.1
+  coord_noise: coordwise
+type: generalization
+trainer: stage_inr
+seed: 0
+runtime:
+  args:
+    model_config: /home/umaru/praktikum/changed_version/2023_visionpractical/config/shapenet_transinr.yaml
+    result_path: /home/umaru/praktikum/changed_version/2023_visionpractical/exp_week9_meta_transinr
+    task: test_13
+    load_path: ''
+    postfix: ''
+    seed: 0
+    eval: false
+    resume: false
+    world_size: 1
+    local_rank: 0
+    node_rank: 0
+    nnodes: 1
+    nproc_per_node: 1
+    dist_backend: nccl
+    timeout: 1
+    rank: 0
+  extra_config: {}
+  distenv:
+    world_size: 1
+    world_rank: 0
+    local_rank: 0
+    num_gpus: 1
+    master: true
+    device_name: NVIDIA GeForce RTX 3060 Laptop GPU
+result_path: /home/umaru/praktikum/changed_version/2023_visionpractical/exp_week9_meta_transinr/shapenet_transinr/test_13
+
+12/28/2023 20:22:30 - INFO - main_stage_inr.py -   #train samples: 25, #valid samples: 2
+12/28/2023 20:22:30 - INFO - main_stage_inr.py -   [OPTION: ALL] #parameters: 4.1423M
+12/28/2023 20:22:30 - INFO - main_stage_inr.py -   [OPTION: trainable-only] #parameters: 4.1423M
+12/28/2023 20:22:30 - INFO - main_stage_inr.py -   Trainer created. type: <class 'trainer.trainer_stage_inr.Trainer'>
+12/28/2023 20:22:34 - INFO - trainer.trainer_stage_inr -   ep:1, train     , loss_total: 1532.2642, mse: 0.0000, psnr: 0.0000, onsurface_loss: 18.8310, spatial_loss: 0.0000, grad_loss: 1443.1938, normal_loss: 50.1690, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 602.1108, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:22:34 - INFO - trainer.trainer_stage_inr -   ep:1, valid     , loss_total: 510.0449, mse: 0.0000, psnr: 0.0000, onsurface_loss: 7.3150, spatial_loss: 0.0000, grad_loss: 465.9742, normal_loss: 25.0753, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 350.4118, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:22:37 - INFO - trainer.trainer_stage_inr -   ep:2, train     , loss_total: 1069.9869, mse: 0.0000, psnr: 0.0000, onsurface_loss: 14.2637, spatial_loss: 0.0000, grad_loss: 982.5729, normal_loss: 49.9055, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 697.3456, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:22:37 - INFO - trainer.trainer_stage_inr -   ep:2, valid     , loss_total: 373.0302, mse: 0.0000, psnr: 0.0000, onsurface_loss: 8.5556, spatial_loss: 0.0000, grad_loss: 330.0089, normal_loss: 24.8246, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 289.2323, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:25:34 - INFO - main_stage_inr.py -   DistEnv(world_size=1, world_rank=0, local_rank=0, num_gpus=1, master=True, device_name='NVIDIA GeForce RTX 3060 Laptop GPU')
+12/28/2023 20:25:34 - INFO - main_stage_inr.py -   log_path: /home/umaru/praktikum/changed_version/2023_visionpractical/exp_week9_meta_transinr/shapenet_transinr/test_13
+12/28/2023 20:25:34 - INFO - main_stage_inr.py -   
+arch:
+  type: low_rank_modulated_transinr
+  ema: null
+  data_encoder:
+    type: PointNet2
+    n_channel: 3
+    trainable: true
+    encoder_spec:
+      patch_size: 9
+      padding: 1
+  latent_mapping:
+    type: linear
+    n_patches: 500
+    n_layer: 1
+    activation: relu
+    hidden_dim:
+    - 256
+    latent_dim: 768
+    use_pe: true
+  transformer:
+    n_layer: 4
+    embed_dim: 256
+    mask: false
+    block:
+      embed_dim: 256
+      n_head: 32
+      mlp_bias: true
+      attn_bias: true
+      attn_pdrop: 0.0
+      resid_pdrop: 0.1
+      gelu: v1
+  hyponet:
+    type: mlp
+    n_layer: 6
+    hidden_dim:
+    - 256
+    use_bias: true
+    share_bias: false
+    input_dim: 3
+    output_dim: 2
+    output_bias: 0.0
+    fourier_mapping:
+      type: siren
+      trainable: false
+      use_ff: false
+      ff_sigma: 0
+      ff_dim: 0
+    activation:
+      type: siren
+      siren_w0: 30.0
+    initialization:
+      weight_init_type: siren
+      bias_init_type: siren
+    normalize_weight: true
+  coord_sampler:
+    data_type: image
+    coord_range:
+    - -1.0
+    - 1.0
+    train_strategy: null
+    val_strategy: null
+  n_weight_groups:
+  - 257
+  modulated_layer_idxs:
+  - 1
+dataset:
+  transforms:
+    type: shapenet
+  type: shapenet
+  supervision: siren_sdf
+  folder: /home/umaru/PycharmProjects/meta_shaope/data/1shape
+optimizer:
+  type: adam_hyper
+  max_gn: null
+  warmup:
+    mode: adaptive
+    start_from_zero: true
+    epoch: 0
+    multiplier: 1
+    buffer_epoch: 0
+    step_size: 1000
+    min_lr: 0.0001
+    patience_adaptive: 20000
+    factor: 0.9
+    threshold: 0
+  init_lr: 0.0001
+  weight_decay: 0.0
+  betas:
+  - 0.9
+  - 0.999
+  grad_accm_steps: 1
+experiment:
+  test_freq: 1
+  amp: true
+  batch_size: 2
+  total_batch_size: 2
+  epochs_cos: 30
+  epochs: 40000
+  save_ckpt_freq: 500
+  test_imlog_freq: 100
+loss:
+  type: mse
+  subsample:
+    type: null
+    ratio: 0.1
+  coord_noise: coordwise
+type: generalization
+trainer: stage_inr
+seed: 0
+runtime:
+  args:
+    model_config: /home/umaru/praktikum/changed_version/2023_visionpractical/config/shapenet_transinr.yaml
+    result_path: /home/umaru/praktikum/changed_version/2023_visionpractical/exp_week9_meta_transinr
+    task: test_13
+    load_path: ''
+    postfix: ''
+    seed: 0
+    eval: false
+    resume: false
+    world_size: 1
+    local_rank: 0
+    node_rank: 0
+    nnodes: 1
+    nproc_per_node: 1
+    dist_backend: nccl
+    timeout: 1
+    rank: 0
+  extra_config: {}
+  distenv:
+    world_size: 1
+    world_rank: 0
+    local_rank: 0
+    num_gpus: 1
+    master: true
+    device_name: NVIDIA GeForce RTX 3060 Laptop GPU
+result_path: /home/umaru/praktikum/changed_version/2023_visionpractical/exp_week9_meta_transinr/shapenet_transinr/test_13
+
+12/28/2023 20:25:34 - INFO - main_stage_inr.py -   #train samples: 25, #valid samples: 2
+12/28/2023 20:25:35 - INFO - main_stage_inr.py -   [OPTION: ALL] #parameters: 4.1423M
+12/28/2023 20:25:35 - INFO - main_stage_inr.py -   [OPTION: trainable-only] #parameters: 4.1423M
+12/28/2023 20:25:35 - INFO - main_stage_inr.py -   Trainer created. type: <class 'trainer.trainer_stage_inr.Trainer'>
+12/28/2023 20:26:05 - INFO - main_stage_inr.py -   DistEnv(world_size=1, world_rank=0, local_rank=0, num_gpus=1, master=True, device_name='NVIDIA GeForce RTX 3060 Laptop GPU')
+12/28/2023 20:26:05 - INFO - main_stage_inr.py -   log_path: /home/umaru/praktikum/changed_version/2023_visionpractical/exp_week9_meta_transinr/shapenet_transinr/test_13
+12/28/2023 20:26:05 - INFO - main_stage_inr.py -   
+arch:
+  type: low_rank_modulated_transinr
+  ema: null
+  data_encoder:
+    type: PointNet2
+    n_channel: 3
+    trainable: true
+    encoder_spec:
+      patch_size: 9
+      padding: 1
+  latent_mapping:
+    type: linear
+    n_patches: 500
+    n_layer: 1
+    activation: relu
+    hidden_dim:
+    - 256
+    latent_dim: 768
+    use_pe: true
+  transformer:
+    n_layer: 4
+    embed_dim: 256
+    mask: false
+    block:
+      embed_dim: 256
+      n_head: 32
+      mlp_bias: true
+      attn_bias: true
+      attn_pdrop: 0.0
+      resid_pdrop: 0.1
+      gelu: v1
+  hyponet:
+    type: mlp
+    n_layer: 6
+    hidden_dim:
+    - 256
+    use_bias: true
+    share_bias: false
+    input_dim: 3
+    output_dim: 2
+    output_bias: 0.0
+    fourier_mapping:
+      type: siren
+      trainable: false
+      use_ff: false
+      ff_sigma: 0
+      ff_dim: 0
+    activation:
+      type: siren
+      siren_w0: 30.0
+    initialization:
+      weight_init_type: siren
+      bias_init_type: siren
+    normalize_weight: true
+  coord_sampler:
+    data_type: image
+    coord_range:
+    - -1.0
+    - 1.0
+    train_strategy: null
+    val_strategy: null
+  n_weight_groups:
+  - 257
+  modulated_layer_idxs:
+  - 1
+dataset:
+  transforms:
+    type: shapenet
+  type: shapenet
+  supervision: siren_sdf
+  folder: /home/umaru/PycharmProjects/meta_shaope/data/1shape
+optimizer:
+  type: adam_hyper
+  max_gn: null
+  warmup:
+    mode: adaptive
+    start_from_zero: true
+    epoch: 0
+    multiplier: 1
+    buffer_epoch: 0
+    step_size: 1000
+    min_lr: 0.0001
+    patience_adaptive: 20000
+    factor: 0.9
+    threshold: 0
+  init_lr: 0.0001
+  weight_decay: 0.0
+  betas:
+  - 0.9
+  - 0.999
+  grad_accm_steps: 1
+experiment:
+  test_freq: 1
+  amp: true
+  batch_size: 2
+  total_batch_size: 2
+  epochs_cos: 30
+  epochs: 40000
+  save_ckpt_freq: 500
+  test_imlog_freq: 100
+loss:
+  type: mse
+  subsample:
+    type: null
+    ratio: 0.1
+  coord_noise: coordwise
+type: generalization
+trainer: stage_inr
+seed: 0
+runtime:
+  args:
+    model_config: /home/umaru/praktikum/changed_version/2023_visionpractical/config/shapenet_transinr.yaml
+    result_path: /home/umaru/praktikum/changed_version/2023_visionpractical/exp_week9_meta_transinr
+    task: test_13
+    load_path: ''
+    postfix: ''
+    seed: 0
+    eval: false
+    resume: false
+    world_size: 1
+    local_rank: 0
+    node_rank: 0
+    nnodes: 1
+    nproc_per_node: 1
+    dist_backend: nccl
+    timeout: 1
+    rank: 0
+  extra_config: {}
+  distenv:
+    world_size: 1
+    world_rank: 0
+    local_rank: 0
+    num_gpus: 1
+    master: true
+    device_name: NVIDIA GeForce RTX 3060 Laptop GPU
+result_path: /home/umaru/praktikum/changed_version/2023_visionpractical/exp_week9_meta_transinr/shapenet_transinr/test_13
+
+12/28/2023 20:26:05 - INFO - main_stage_inr.py -   #train samples: 25, #valid samples: 2
+12/28/2023 20:26:05 - INFO - main_stage_inr.py -   [OPTION: ALL] #parameters: 4.1423M
+12/28/2023 20:26:05 - INFO - main_stage_inr.py -   [OPTION: trainable-only] #parameters: 4.1423M
+12/28/2023 20:26:05 - INFO - main_stage_inr.py -   Trainer created. type: <class 'trainer.trainer_stage_inr.Trainer'>
+12/28/2023 20:26:09 - INFO - trainer.trainer_stage_inr -   ep:1, train     , loss_total: 120.3903, mse: 0.0000, psnr: 0.0000, onsurface_loss: 25.2733, spatial_loss: 0.0000, grad_loss: 29.2193, normal_loss: 49.3675, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 495.9075, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:26:09 - INFO - trainer.trainer_stage_inr -   ep:1, valid     , loss_total: 59.8409, mse: 0.0000, psnr: 0.0000, onsurface_loss: 12.7039, spatial_loss: 0.0000, grad_loss: 15.2133, normal_loss: 25.2511, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 200.1773, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:26:11 - INFO - trainer.trainer_stage_inr -   ep:2, train     , loss_total: 117.2503, mse: 0.0000, psnr: 0.0000, onsurface_loss: 20.6802, spatial_loss: 0.0000, grad_loss: 28.7619, normal_loss: 49.2800, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 555.8444, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:26:11 - INFO - trainer.trainer_stage_inr -   ep:2, valid     , loss_total: 61.9746, mse: 0.0000, psnr: 0.0000, onsurface_loss: 11.3895, spatial_loss: 0.0000, grad_loss: 16.6000, normal_loss: 24.8278, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 274.7173, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:26:13 - INFO - trainer.trainer_stage_inr -   ep:3, train     , loss_total: 115.9389, mse: 0.0000, psnr: 0.0000, onsurface_loss: 19.0023, spatial_loss: 0.0000, grad_loss: 28.2739, normal_loss: 49.2967, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 580.9819, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:26:13 - INFO - trainer.trainer_stage_inr -   ep:3, valid     , loss_total: 57.2830, mse: 0.0000, psnr: 0.0000, onsurface_loss: 6.3072, spatial_loss: 0.0000, grad_loss: 14.1441, normal_loss: 24.5262, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 369.1646, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:26:15 - INFO - trainer.trainer_stage_inr -   ep:4, train     , loss_total: 116.0802, mse: 0.0000, psnr: 0.0000, onsurface_loss: 18.5361, spatial_loss: 0.0000, grad_loss: 28.2110, normal_loss: 49.8419, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 584.7366, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:26:15 - INFO - trainer.trainer_stage_inr -   ep:4, valid     , loss_total: 58.1939, mse: 0.0000, psnr: 0.0000, onsurface_loss: 9.8113, spatial_loss: 0.0000, grad_loss: 15.1518, normal_loss: 24.6569, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 257.2142, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:26:17 - INFO - trainer.trainer_stage_inr -   ep:5, train     , loss_total: 115.1390, mse: 0.0000, psnr: 0.0000, onsurface_loss: 17.9587, spatial_loss: 0.0000, grad_loss: 28.0963, normal_loss: 49.5078, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 587.2867, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:26:17 - INFO - trainer.trainer_stage_inr -   ep:5, valid     , loss_total: 57.7473, mse: 0.0000, psnr: 0.0000, onsurface_loss: 9.7976, spatial_loss: 0.0000, grad_loss: 15.8566, normal_loss: 23.8377, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 247.6631, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:26:19 - INFO - trainer.trainer_stage_inr -   ep:6, train     , loss_total: 114.8935, mse: 0.0000, psnr: 0.0000, onsurface_loss: 16.7473, spatial_loss: 0.0000, grad_loss: 28.3640, normal_loss: 49.4962, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 608.5804, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:26:19 - INFO - trainer.trainer_stage_inr -   ep:6, valid     , loss_total: 58.2689, mse: 0.0000, psnr: 0.0000, onsurface_loss: 7.7726, spatial_loss: 0.0000, grad_loss: 15.6096, normal_loss: 24.2100, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 320.3008, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:26:21 - INFO - trainer.trainer_stage_inr -   ep:7, train     , loss_total: 114.7387, mse: 0.0000, psnr: 0.0000, onsurface_loss: 16.8154, spatial_loss: 0.0000, grad_loss: 28.0623, normal_loss: 49.4191, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 613.2573, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:26:21 - INFO - trainer.trainer_stage_inr -   ep:7, valid     , loss_total: 57.2325, mse: 0.0000, psnr: 0.0000, onsurface_loss: 7.7454, spatial_loss: 0.0000, grad_loss: 14.6354, normal_loss: 24.1223, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 321.8836, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:26:23 - INFO - trainer.trainer_stage_inr -   ep:8, train     , loss_total: 114.4195, mse: 0.0000, psnr: 0.0000, onsurface_loss: 16.6269, spatial_loss: 0.0000, grad_loss: 27.8742, normal_loss: 49.2892, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 618.8779, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:26:23 - INFO - trainer.trainer_stage_inr -   ep:8, valid     , loss_total: 56.3023, mse: 0.0000, psnr: 0.0000, onsurface_loss: 8.5985, spatial_loss: 0.0000, grad_loss: 13.7352, normal_loss: 24.5961, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 281.1772, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:26:25 - INFO - trainer.trainer_stage_inr -   ep:9, train     , loss_total: 114.3237, mse: 0.0000, psnr: 0.0000, onsurface_loss: 16.5713, spatial_loss: 0.0000, grad_loss: 27.9501, normal_loss: 49.2360, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 616.9917, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:26:25 - INFO - trainer.trainer_stage_inr -   ep:9, valid     , loss_total: 58.1790, mse: 0.0000, psnr: 0.0000, onsurface_loss: 8.4041, spatial_loss: 0.0000, grad_loss: 14.8503, normal_loss: 24.5603, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 310.9285, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:26:27 - INFO - trainer.trainer_stage_inr -   ep:10, train     , loss_total: 113.8406, mse: 0.0000, psnr: 0.0000, onsurface_loss: 16.5375, spatial_loss: 0.0000, grad_loss: 27.7742, normal_loss: 49.4004, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 603.8581, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:26:27 - INFO - trainer.trainer_stage_inr -   ep:10, valid     , loss_total: 56.9624, mse: 0.0000, psnr: 0.0000, onsurface_loss: 9.2026, spatial_loss: 0.0000, grad_loss: 15.1589, normal_loss: 24.3319, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 248.0691, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:26:29 - INFO - trainer.trainer_stage_inr -   ep:11, train     , loss_total: 113.8699, mse: 0.0000, psnr: 0.0000, onsurface_loss: 16.2085, spatial_loss: 0.0000, grad_loss: 27.8631, normal_loss: 49.5195, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 608.3634, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:26:29 - INFO - trainer.trainer_stage_inr -   ep:11, valid     , loss_total: 57.6307, mse: 0.0000, psnr: 0.0000, onsurface_loss: 11.5604, spatial_loss: 0.0000, grad_loss: 15.0683, normal_loss: 23.8990, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 213.0912, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:26:31 - INFO - trainer.trainer_stage_inr -   ep:12, train     , loss_total: 112.8193, mse: 0.0000, psnr: 0.0000, onsurface_loss: 16.9627, spatial_loss: 0.0000, grad_loss: 27.4412, normal_loss: 49.1195, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 578.8781, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:26:31 - INFO - trainer.trainer_stage_inr -   ep:12, valid     , loss_total: 58.0972, mse: 0.0000, psnr: 0.0000, onsurface_loss: 11.6473, spatial_loss: 0.0000, grad_loss: 15.7978, normal_loss: 23.8175, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 205.0378, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:26:33 - INFO - trainer.trainer_stage_inr -   ep:13, train     , loss_total: 113.9983, mse: 0.0000, psnr: 0.0000, onsurface_loss: 17.4335, spatial_loss: 0.0000, grad_loss: 27.4679, normal_loss: 49.7660, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 579.9281, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:26:33 - INFO - trainer.trainer_stage_inr -   ep:13, valid     , loss_total: 57.6675, mse: 0.0000, psnr: 0.0000, onsurface_loss: 8.4975, spatial_loss: 0.0000, grad_loss: 15.7018, normal_loss: 24.2324, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 277.0739, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:26:35 - INFO - trainer.trainer_stage_inr -   ep:14, train     , loss_total: 113.4474, mse: 0.0000, psnr: 0.0000, onsurface_loss: 16.5689, spatial_loss: 0.0000, grad_loss: 27.3711, normal_loss: 49.7248, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 593.4789, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:26:35 - INFO - trainer.trainer_stage_inr -   ep:14, valid     , loss_total: 58.4785, mse: 0.0000, psnr: 0.0000, onsurface_loss: 7.4965, spatial_loss: 0.0000, grad_loss: 15.7161, normal_loss: 24.1991, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 332.0036, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:26:37 - INFO - trainer.trainer_stage_inr -   ep:15, train     , loss_total: 113.5323, mse: 0.0000, psnr: 0.0000, onsurface_loss: 17.2329, spatial_loss: 0.0000, grad_loss: 27.5626, normal_loss: 49.6427, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 572.8224, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:26:37 - INFO - trainer.trainer_stage_inr -   ep:15, valid     , loss_total: 57.7093, mse: 0.0000, psnr: 0.0000, onsurface_loss: 12.3262, spatial_loss: 0.0000, grad_loss: 14.5486, normal_loss: 24.3535, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 194.4292, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:26:39 - INFO - trainer.trainer_stage_inr -   ep:16, train     , loss_total: 113.2726, mse: 0.0000, psnr: 0.0000, onsurface_loss: 18.6816, spatial_loss: 0.0000, grad_loss: 27.4511, normal_loss: 49.3769, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 532.8882, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:26:39 - INFO - trainer.trainer_stage_inr -   ep:16, valid     , loss_total: 58.4235, mse: 0.0000, psnr: 0.0000, onsurface_loss: 11.5657, spatial_loss: 0.0000, grad_loss: 16.1959, normal_loss: 24.0194, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 199.2718, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:26:41 - INFO - trainer.trainer_stage_inr -   ep:17, train     , loss_total: 112.8118, mse: 0.0000, psnr: 0.0000, onsurface_loss: 16.9881, spatial_loss: 0.0000, grad_loss: 27.4439, normal_loss: 49.0213, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 580.7538, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:26:41 - INFO - trainer.trainer_stage_inr -   ep:17, valid     , loss_total: 58.3086, mse: 0.0000, psnr: 0.0000, onsurface_loss: 11.5114, spatial_loss: 0.0000, grad_loss: 15.8385, normal_loss: 24.2473, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 201.3437, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:26:58 - INFO - main_stage_inr.py -   DistEnv(world_size=1, world_rank=0, local_rank=0, num_gpus=1, master=True, device_name='NVIDIA GeForce RTX 3060 Laptop GPU')
+12/28/2023 20:26:58 - INFO - main_stage_inr.py -   log_path: /home/umaru/praktikum/changed_version/2023_visionpractical/exp_week9_meta_transinr/shapenet_transinr/test_13
+12/28/2023 20:26:58 - INFO - main_stage_inr.py -   
+arch:
+  type: low_rank_modulated_transinr
+  ema: null
+  data_encoder:
+    type: PointNet2
+    n_channel: 3
+    trainable: true
+    encoder_spec:
+      patch_size: 9
+      padding: 1
+  latent_mapping:
+    type: linear
+    n_patches: 500
+    n_layer: 1
+    activation: relu
+    hidden_dim:
+    - 256
+    latent_dim: 768
+    use_pe: true
+  transformer:
+    n_layer: 4
+    embed_dim: 256
+    mask: false
+    block:
+      embed_dim: 256
+      n_head: 32
+      mlp_bias: true
+      attn_bias: true
+      attn_pdrop: 0.0
+      resid_pdrop: 0.1
+      gelu: v1
+  hyponet:
+    type: mlp
+    n_layer: 6
+    hidden_dim:
+    - 256
+    use_bias: true
+    share_bias: false
+    input_dim: 3
+    output_dim: 2
+    output_bias: 0.0
+    fourier_mapping:
+      type: siren
+      trainable: false
+      use_ff: false
+      ff_sigma: 0
+      ff_dim: 0
+    activation:
+      type: siren
+      siren_w0: 30.0
+    initialization:
+      weight_init_type: siren
+      bias_init_type: siren
+    normalize_weight: true
+  coord_sampler:
+    data_type: image
+    coord_range:
+    - -1.0
+    - 1.0
+    train_strategy: null
+    val_strategy: null
+  n_weight_groups:
+  - 257
+  modulated_layer_idxs:
+  - 1
+dataset:
+  transforms:
+    type: shapenet
+  type: shapenet
+  supervision: siren_sdf
+  folder: /home/umaru/PycharmProjects/meta_shaope/data/1shape
+optimizer:
+  type: adam_hyper
+  max_gn: null
+  warmup:
+    mode: adaptive
+    start_from_zero: true
+    epoch: 0
+    multiplier: 1
+    buffer_epoch: 0
+    step_size: 1000
+    min_lr: 0.0001
+    patience_adaptive: 20000
+    factor: 0.9
+    threshold: 0
+  init_lr: 0.0001
+  weight_decay: 0.0
+  betas:
+  - 0.9
+  - 0.999
+  grad_accm_steps: 1
+experiment:
+  test_freq: 1
+  amp: true
+  batch_size: 2
+  total_batch_size: 2
+  epochs_cos: 30
+  epochs: 40000
+  save_ckpt_freq: 500
+  test_imlog_freq: 100
+loss:
+  type: mse
+  subsample:
+    type: null
+    ratio: 0.1
+  coord_noise: coordwise
+type: generalization
+trainer: stage_inr
+seed: 0
+runtime:
+  args:
+    model_config: /home/umaru/praktikum/changed_version/2023_visionpractical/config/shapenet_transinr.yaml
+    result_path: /home/umaru/praktikum/changed_version/2023_visionpractical/exp_week9_meta_transinr
+    task: test_13
+    load_path: ''
+    postfix: ''
+    seed: 0
+    eval: false
+    resume: false
+    world_size: 1
+    local_rank: 0
+    node_rank: 0
+    nnodes: 1
+    nproc_per_node: 1
+    dist_backend: nccl
+    timeout: 1
+    rank: 0
+  extra_config: {}
+  distenv:
+    world_size: 1
+    world_rank: 0
+    local_rank: 0
+    num_gpus: 1
+    master: true
+    device_name: NVIDIA GeForce RTX 3060 Laptop GPU
+result_path: /home/umaru/praktikum/changed_version/2023_visionpractical/exp_week9_meta_transinr/shapenet_transinr/test_13
+
+12/28/2023 20:26:58 - INFO - main_stage_inr.py -   #train samples: 25, #valid samples: 2
+12/28/2023 20:26:58 - INFO - main_stage_inr.py -   [OPTION: ALL] #parameters: 4.1423M
+12/28/2023 20:26:58 - INFO - main_stage_inr.py -   [OPTION: trainable-only] #parameters: 4.1423M
+12/28/2023 20:26:58 - INFO - main_stage_inr.py -   Trainer created. type: <class 'trainer.trainer_stage_inr.Trainer'>
+12/28/2023 20:27:02 - INFO - trainer.trainer_stage_inr -   ep:1, train     , loss_total: 119.8198, mse: 0.0000, psnr: 0.0000, onsurface_loss: 23.9000, spatial_loss: 0.0000, grad_loss: 28.8603, normal_loss: 49.6755, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 521.5190, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:27:02 - INFO - trainer.trainer_stage_inr -   ep:1, valid     , loss_total: 59.7834, mse: 0.0000, psnr: 0.0000, onsurface_loss: 12.3806, spatial_loss: 0.0000, grad_loss: 14.8089, normal_loss: 23.9037, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 260.7053, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:27:04 - INFO - trainer.trainer_stage_inr -   ep:2, train     , loss_total: 116.4242, mse: 0.0000, psnr: 0.0000, onsurface_loss: 19.8445, spatial_loss: 0.0000, grad_loss: 27.9897, normal_loss: 49.5520, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 571.1440, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:27:04 - INFO - trainer.trainer_stage_inr -   ep:2, valid     , loss_total: 60.1863, mse: 0.0000, psnr: 0.0000, onsurface_loss: 7.5168, spatial_loss: 0.0000, grad_loss: 15.0786, normal_loss: 24.7143, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 386.2968, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:27:06 - INFO - trainer.trainer_stage_inr -   ep:3, train     , loss_total: 116.1199, mse: 0.0000, psnr: 0.0000, onsurface_loss: 19.0720, spatial_loss: 0.0000, grad_loss: 27.9245, normal_loss: 49.6165, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 585.2053, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:27:06 - INFO - trainer.trainer_stage_inr -   ep:3, valid     , loss_total: 58.8962, mse: 0.0000, psnr: 0.0000, onsurface_loss: 9.8966, spatial_loss: 0.0000, grad_loss: 15.2432, normal_loss: 24.0354, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 291.6294, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:27:08 - INFO - trainer.trainer_stage_inr -   ep:4, train     , loss_total: 116.1806, mse: 0.0000, psnr: 0.0000, onsurface_loss: 17.6608, spatial_loss: 0.0000, grad_loss: 28.1159, normal_loss: 49.9084, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 614.8660, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:27:08 - INFO - trainer.trainer_stage_inr -   ep:4, valid     , loss_total: 60.1160, mse: 0.0000, psnr: 0.0000, onsurface_loss: 7.3705, spatial_loss: 0.0000, grad_loss: 15.9207, normal_loss: 24.9863, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 355.1555, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:27:10 - INFO - trainer.trainer_stage_inr -   ep:5, train     , loss_total: 115.8841, mse: 0.0000, psnr: 0.0000, onsurface_loss: 17.5411, spatial_loss: 0.0000, grad_loss: 28.1108, normal_loss: 49.9167, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 609.4659, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:27:10 - INFO - trainer.trainer_stage_inr -   ep:5, valid     , loss_total: 58.2588, mse: 0.0000, psnr: 0.0000, onsurface_loss: 9.0625, spatial_loss: 0.0000, grad_loss: 15.3595, normal_loss: 25.0378, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 263.9684, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:27:12 - INFO - trainer.trainer_stage_inr -   ep:6, train     , loss_total: 115.3087, mse: 0.0000, psnr: 0.0000, onsurface_loss: 16.0216, spatial_loss: 0.0000, grad_loss: 27.9373, normal_loss: 49.8127, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 646.1110, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:27:12 - INFO - trainer.trainer_stage_inr -   ep:6, valid     , loss_total: 62.6994, mse: 0.0000, psnr: 0.0000, onsurface_loss: 12.7590, spatial_loss: 0.0000, grad_loss: 17.8447, normal_loss: 24.9988, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 212.9054, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:27:14 - INFO - trainer.trainer_stage_inr -   ep:7, train     , loss_total: 115.3000, mse: 0.0000, psnr: 0.0000, onsurface_loss: 16.6545, spatial_loss: 0.0000, grad_loss: 28.3207, normal_loss: 49.6053, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 621.5834, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:27:14 - INFO - trainer.trainer_stage_inr -   ep:7, valid     , loss_total: 58.1882, mse: 0.0000, psnr: 0.0000, onsurface_loss: 8.8222, spatial_loss: 0.0000, grad_loss: 15.2848, normal_loss: 24.3117, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 293.0833, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:27:16 - INFO - trainer.trainer_stage_inr -   ep:8, train     , loss_total: 114.9868, mse: 0.0000, psnr: 0.0000, onsurface_loss: 15.9425, spatial_loss: 0.0000, grad_loss: 28.1564, normal_loss: 49.6478, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 637.2034, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:27:16 - INFO - trainer.trainer_stage_inr -   ep:8, valid     , loss_total: 59.3777, mse: 0.0000, psnr: 0.0000, onsurface_loss: 12.0807, spatial_loss: 0.0000, grad_loss: 15.9632, normal_loss: 24.3970, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 208.1014, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:27:18 - INFO - trainer.trainer_stage_inr -   ep:9, train     , loss_total: 114.5816, mse: 0.0000, psnr: 0.0000, onsurface_loss: 16.1054, spatial_loss: 0.0000, grad_loss: 28.1317, normal_loss: 49.3355, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 630.2681, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:27:18 - INFO - trainer.trainer_stage_inr -   ep:9, valid     , loss_total: 58.8860, mse: 0.0000, psnr: 0.0000, onsurface_loss: 9.9823, spatial_loss: 0.0000, grad_loss: 15.6447, normal_loss: 24.6009, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 259.7421, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:27:20 - INFO - trainer.trainer_stage_inr -   ep:10, train     , loss_total: 114.5454, mse: 0.0000, psnr: 0.0000, onsurface_loss: 17.6520, spatial_loss: 0.0000, grad_loss: 27.9063, normal_loss: 49.6643, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 579.6849, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:27:20 - INFO - trainer.trainer_stage_inr -   ep:10, valid     , loss_total: 57.9949, mse: 0.0000, psnr: 0.0000, onsurface_loss: 8.3194, spatial_loss: 0.0000, grad_loss: 15.4136, normal_loss: 24.0988, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 304.8918, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:27:22 - INFO - trainer.trainer_stage_inr -   ep:11, train     , loss_total: 114.4103, mse: 0.0000, psnr: 0.0000, onsurface_loss: 16.7026, spatial_loss: 0.0000, grad_loss: 28.1595, normal_loss: 49.6370, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 597.3354, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:27:22 - INFO - trainer.trainer_stage_inr -   ep:11, valid     , loss_total: 59.0038, mse: 0.0000, psnr: 0.0000, onsurface_loss: 11.7794, spatial_loss: 0.0000, grad_loss: 14.9584, normal_loss: 25.1061, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 214.7955, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:27:24 - INFO - trainer.trainer_stage_inr -   ep:12, train     , loss_total: 114.3806, mse: 0.0000, psnr: 0.0000, onsurface_loss: 18.1498, spatial_loss: 0.0000, grad_loss: 28.1783, normal_loss: 49.6144, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 553.1419, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:27:24 - INFO - trainer.trainer_stage_inr -   ep:12, valid     , loss_total: 57.9275, mse: 0.0000, psnr: 0.0000, onsurface_loss: 9.7280, spatial_loss: 0.0000, grad_loss: 15.7186, normal_loss: 24.5961, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 236.5432, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:27:26 - INFO - trainer.trainer_stage_inr -   ep:13, train     , loss_total: 113.8286, mse: 0.0000, psnr: 0.0000, onsurface_loss: 17.6978, spatial_loss: 0.0000, grad_loss: 28.0089, normal_loss: 49.5010, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 558.6283, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:27:26 - INFO - trainer.trainer_stage_inr -   ep:13, valid     , loss_total: 58.1874, mse: 0.0000, psnr: 0.0000, onsurface_loss: 7.4948, spatial_loss: 0.0000, grad_loss: 15.1814, normal_loss: 25.3203, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 305.7299, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:27:28 - INFO - trainer.trainer_stage_inr -   ep:14, train     , loss_total: 113.4943, mse: 0.0000, psnr: 0.0000, onsurface_loss: 18.5588, spatial_loss: 0.0000, grad_loss: 27.6766, normal_loss: 49.5897, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 530.0775, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:27:28 - INFO - trainer.trainer_stage_inr -   ep:14, valid     , loss_total: 58.9945, mse: 0.0000, psnr: 0.0000, onsurface_loss: 9.5280, spatial_loss: 0.0000, grad_loss: 16.0718, normal_loss: 24.5562, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 265.1544, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:27:31 - INFO - trainer.trainer_stage_inr -   ep:15, train     , loss_total: 113.1439, mse: 0.0000, psnr: 0.0000, onsurface_loss: 17.8715, spatial_loss: 0.0000, grad_loss: 27.6608, normal_loss: 49.3730, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 547.1583, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:27:31 - INFO - trainer.trainer_stage_inr -   ep:15, valid     , loss_total: 58.7333, mse: 0.0000, psnr: 0.0000, onsurface_loss: 11.1544, spatial_loss: 0.0000, grad_loss: 15.2424, normal_loss: 24.8192, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 225.5174, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:28:51 - INFO - main_stage_inr.py -   DistEnv(world_size=1, world_rank=0, local_rank=0, num_gpus=1, master=True, device_name='NVIDIA GeForce RTX 3060 Laptop GPU')
+12/28/2023 20:28:51 - INFO - main_stage_inr.py -   log_path: /home/umaru/praktikum/changed_version/2023_visionpractical/exp_week9_meta_transinr/shapenet_transinr/test_13
+12/28/2023 20:28:51 - INFO - main_stage_inr.py -   
+arch:
+  type: low_rank_modulated_transinr
+  ema: null
+  data_encoder:
+    type: PointNet2
+    n_channel: 3
+    trainable: true
+    encoder_spec:
+      patch_size: 9
+      padding: 1
+  latent_mapping:
+    type: linear
+    n_patches: 500
+    n_layer: 1
+    activation: relu
+    hidden_dim:
+    - 256
+    latent_dim: 768
+    use_pe: true
+  transformer:
+    n_layer: 4
+    embed_dim: 256
+    mask: false
+    block:
+      embed_dim: 256
+      n_head: 32
+      mlp_bias: true
+      attn_bias: true
+      attn_pdrop: 0.0
+      resid_pdrop: 0.1
+      gelu: v1
+  hyponet:
+    type: mlp
+    n_layer: 6
+    hidden_dim:
+    - 256
+    use_bias: true
+    share_bias: false
+    input_dim: 3
+    output_dim: 2
+    output_bias: 0.0
+    fourier_mapping:
+      type: siren
+      trainable: false
+      use_ff: false
+      ff_sigma: 0
+      ff_dim: 0
+    activation:
+      type: siren
+      siren_w0: 30.0
+    initialization:
+      weight_init_type: siren
+      bias_init_type: siren
+    normalize_weight: true
+  coord_sampler:
+    data_type: image
+    coord_range:
+    - -1.0
+    - 1.0
+    train_strategy: null
+    val_strategy: null
+  n_weight_groups:
+  - 257
+  modulated_layer_idxs:
+  - 1
+dataset:
+  transforms:
+    type: shapenet
+  type: shapenet
+  supervision: siren_sdf
+  folder: /home/umaru/PycharmProjects/meta_shaope/data/1shape
+optimizer:
+  type: adam_hyper
+  max_gn: null
+  warmup:
+    mode: adaptive
+    start_from_zero: true
+    epoch: 0
+    multiplier: 1
+    buffer_epoch: 0
+    step_size: 1000
+    min_lr: 0.0001
+    patience_adaptive: 20000
+    factor: 0.9
+    threshold: 0
+  init_lr: 0.0001
+  weight_decay: 0.0
+  betas:
+  - 0.9
+  - 0.999
+  grad_accm_steps: 1
+experiment:
+  test_freq: 1
+  amp: true
+  batch_size: 2
+  total_batch_size: 2
+  epochs_cos: 30
+  epochs: 40000
+  save_ckpt_freq: 500
+  test_imlog_freq: 100
+loss:
+  type: mse
+  subsample:
+    type: null
+    ratio: 0.1
+  coord_noise: coordwise
+type: generalization
+trainer: stage_inr
+seed: 0
+runtime:
+  args:
+    model_config: /home/umaru/praktikum/changed_version/2023_visionpractical/config/shapenet_transinr.yaml
+    result_path: /home/umaru/praktikum/changed_version/2023_visionpractical/exp_week9_meta_transinr
+    task: test_13
+    load_path: ''
+    postfix: ''
+    seed: 0
+    eval: false
+    resume: false
+    world_size: 1
+    local_rank: 0
+    node_rank: 0
+    nnodes: 1
+    nproc_per_node: 1
+    dist_backend: nccl
+    timeout: 1
+    rank: 0
+  extra_config: {}
+  distenv:
+    world_size: 1
+    world_rank: 0
+    local_rank: 0
+    num_gpus: 1
+    master: true
+    device_name: NVIDIA GeForce RTX 3060 Laptop GPU
+result_path: /home/umaru/praktikum/changed_version/2023_visionpractical/exp_week9_meta_transinr/shapenet_transinr/test_13
+
+12/28/2023 20:28:51 - INFO - main_stage_inr.py -   #train samples: 25, #valid samples: 2
+12/28/2023 20:28:51 - INFO - main_stage_inr.py -   [OPTION: ALL] #parameters: 4.1423M
+12/28/2023 20:28:51 - INFO - main_stage_inr.py -   [OPTION: trainable-only] #parameters: 4.1423M
+12/28/2023 20:28:51 - INFO - main_stage_inr.py -   Trainer created. type: <class 'trainer.trainer_stage_inr.Trainer'>
+12/28/2023 20:28:55 - INFO - trainer.trainer_stage_inr -   ep:1, train     , loss_total: 123.0904, mse: 0.0000, psnr: 0.0000, onsurface_loss: 22.2011, spatial_loss: 0.0000, grad_loss: 33.3834, normal_loss: 49.8648, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 529.2340, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:28:55 - INFO - trainer.trainer_stage_inr -   ep:1, valid     , loss_total: 57.8499, mse: 0.0000, psnr: 0.0000, onsurface_loss: 9.0157, spatial_loss: 0.0000, grad_loss: 13.9925, normal_loss: 24.8519, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 299.6904, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:28:57 - INFO - trainer.trainer_stage_inr -   ep:2, train     , loss_total: 116.5883, mse: 0.0000, psnr: 0.0000, onsurface_loss: 17.1844, spatial_loss: 0.0000, grad_loss: 27.9380, normal_loss: 50.2711, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 635.8419, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:28:57 - INFO - trainer.trainer_stage_inr -   ep:2, valid     , loss_total: 57.7436, mse: 0.0000, psnr: 0.0000, onsurface_loss: 8.1063, spatial_loss: 0.0000, grad_loss: 13.7529, normal_loss: 24.9252, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 328.7771, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:29:00 - INFO - trainer.trainer_stage_inr -   ep:3, train     , loss_total: 115.8473, mse: 0.0000, psnr: 0.0000, onsurface_loss: 16.0488, spatial_loss: 0.0000, grad_loss: 28.5005, normal_loss: 49.5816, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 651.4918, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:29:00 - INFO - trainer.trainer_stage_inr -   ep:3, valid     , loss_total: 58.2793, mse: 0.0000, psnr: 0.0000, onsurface_loss: 7.6557, spatial_loss: 0.0000, grad_loss: 14.5085, normal_loss: 24.9237, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 335.7424, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:29:02 - INFO - trainer.trainer_stage_inr -   ep:4, train     , loss_total: 116.4531, mse: 0.0000, psnr: 0.0000, onsurface_loss: 16.7793, spatial_loss: 0.0000, grad_loss: 29.1776, normal_loss: 49.8785, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 618.5322, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:29:02 - INFO - trainer.trainer_stage_inr -   ep:4, valid     , loss_total: 59.3588, mse: 0.0000, psnr: 0.0000, onsurface_loss: 7.7208, spatial_loss: 0.0000, grad_loss: 16.2779, normal_loss: 24.8088, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 316.5381, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:29:04 - INFO - trainer.trainer_stage_inr -   ep:5, train     , loss_total: 117.1195, mse: 0.0000, psnr: 0.0000, onsurface_loss: 17.4562, spatial_loss: 0.0000, grad_loss: 30.4183, normal_loss: 49.6987, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 586.3870, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:29:04 - INFO - trainer.trainer_stage_inr -   ep:5, valid     , loss_total: 59.8178, mse: 0.0000, psnr: 0.0000, onsurface_loss: 9.1388, spatial_loss: 0.0000, grad_loss: 16.5996, normal_loss: 24.7875, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 278.7579, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:29:07 - INFO - trainer.trainer_stage_inr -   ep:6, train     , loss_total: 122.3154, mse: 0.0000, psnr: 0.0000, onsurface_loss: 16.9902, spatial_loss: 0.0000, grad_loss: 35.1283, normal_loss: 49.9813, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 606.4672, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:29:07 - INFO - trainer.trainer_stage_inr -   ep:6, valid     , loss_total: 62.6219, mse: 0.0000, psnr: 0.0000, onsurface_loss: 9.7033, spatial_loss: 0.0000, grad_loss: 19.8921, normal_loss: 24.8266, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 245.9963, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:29:09 - INFO - trainer.trainer_stage_inr -   ep:7, train     , loss_total: 122.7901, mse: 0.0000, psnr: 0.0000, onsurface_loss: 19.2332, spatial_loss: 0.0000, grad_loss: 36.7399, normal_loss: 49.8601, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 508.7055, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:29:09 - INFO - trainer.trainer_stage_inr -   ep:7, valid     , loss_total: 60.5122, mse: 0.0000, psnr: 0.0000, onsurface_loss: 10.8022, spatial_loss: 0.0000, grad_loss: 18.1779, normal_loss: 24.5576, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 209.2382, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:29:11 - INFO - trainer.trainer_stage_inr -   ep:8, train     , loss_total: 119.6432, mse: 0.0000, psnr: 0.0000, onsurface_loss: 19.6234, spatial_loss: 0.0000, grad_loss: 34.3559, normal_loss: 49.8614, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 474.0745, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:29:11 - INFO - trainer.trainer_stage_inr -   ep:8, valid     , loss_total: 60.3596, mse: 0.0000, psnr: 0.0000, onsurface_loss: 9.5098, spatial_loss: 0.0000, grad_loss: 18.0926, normal_loss: 24.9612, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 233.8806, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:29:13 - INFO - trainer.trainer_stage_inr -   ep:9, train     , loss_total: 117.2112, mse: 0.0000, psnr: 0.0000, onsurface_loss: 19.3634, spatial_loss: 0.0000, grad_loss: 32.4452, normal_loss: 50.0932, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 459.2831, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:29:13 - INFO - trainer.trainer_stage_inr -   ep:9, valid     , loss_total: 59.1327, mse: 0.0000, psnr: 0.0000, onsurface_loss: 9.5552, spatial_loss: 0.0000, grad_loss: 16.9271, normal_loss: 25.1523, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 224.9419, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:29:23 - INFO - main_stage_inr.py -   DistEnv(world_size=1, world_rank=0, local_rank=0, num_gpus=1, master=True, device_name='NVIDIA GeForce RTX 3060 Laptop GPU')
+12/28/2023 20:29:23 - INFO - main_stage_inr.py -   log_path: /home/umaru/praktikum/changed_version/2023_visionpractical/exp_week9_meta_transinr/shapenet_transinr/test_13
+12/28/2023 20:29:23 - INFO - main_stage_inr.py -   
+arch:
+  type: low_rank_modulated_transinr
+  ema: null
+  data_encoder:
+    type: PointNet2
+    n_channel: 3
+    trainable: true
+    encoder_spec:
+      patch_size: 9
+      padding: 1
+  latent_mapping:
+    type: linear
+    n_patches: 500
+    n_layer: 1
+    activation: relu
+    hidden_dim:
+    - 256
+    latent_dim: 768
+    use_pe: true
+  transformer:
+    n_layer: 4
+    embed_dim: 256
+    mask: false
+    block:
+      embed_dim: 256
+      n_head: 32
+      mlp_bias: true
+      attn_bias: true
+      attn_pdrop: 0.0
+      resid_pdrop: 0.1
+      gelu: v1
+  hyponet:
+    type: mlp
+    n_layer: 6
+    hidden_dim:
+    - 256
+    use_bias: true
+    share_bias: false
+    input_dim: 3
+    output_dim: 2
+    output_bias: 0.0
+    fourier_mapping:
+      type: siren
+      trainable: false
+      use_ff: false
+      ff_sigma: 0
+      ff_dim: 0
+    activation:
+      type: siren
+      siren_w0: 30.0
+    initialization:
+      weight_init_type: siren
+      bias_init_type: siren
+    normalize_weight: true
+  coord_sampler:
+    data_type: image
+    coord_range:
+    - -1.0
+    - 1.0
+    train_strategy: null
+    val_strategy: null
+  n_weight_groups:
+  - 257
+  modulated_layer_idxs:
+  - 1
+dataset:
+  transforms:
+    type: shapenet
+  type: shapenet
+  supervision: siren_sdf
+  folder: /home/umaru/PycharmProjects/meta_shaope/data/1shape
+optimizer:
+  type: adam_hyper
+  max_gn: null
+  warmup:
+    mode: adaptive
+    start_from_zero: true
+    epoch: 0
+    multiplier: 1
+    buffer_epoch: 0
+    step_size: 1000
+    min_lr: 0.0001
+    patience_adaptive: 20000
+    factor: 0.9
+    threshold: 0
+  init_lr: 0.0001
+  weight_decay: 0.0
+  betas:
+  - 0.9
+  - 0.999
+  grad_accm_steps: 1
+experiment:
+  test_freq: 1
+  amp: true
+  batch_size: 2
+  total_batch_size: 2
+  epochs_cos: 30
+  epochs: 40000
+  save_ckpt_freq: 500
+  test_imlog_freq: 100
+loss:
+  type: mse
+  subsample:
+    type: null
+    ratio: 0.1
+  coord_noise: coordwise
+type: generalization
+trainer: stage_inr
+seed: 0
+runtime:
+  args:
+    model_config: /home/umaru/praktikum/changed_version/2023_visionpractical/config/shapenet_transinr.yaml
+    result_path: /home/umaru/praktikum/changed_version/2023_visionpractical/exp_week9_meta_transinr
+    task: test_13
+    load_path: ''
+    postfix: ''
+    seed: 0
+    eval: false
+    resume: false
+    world_size: 1
+    local_rank: 0
+    node_rank: 0
+    nnodes: 1
+    nproc_per_node: 1
+    dist_backend: nccl
+    timeout: 1
+    rank: 0
+  extra_config: {}
+  distenv:
+    world_size: 1
+    world_rank: 0
+    local_rank: 0
+    num_gpus: 1
+    master: true
+    device_name: NVIDIA GeForce RTX 3060 Laptop GPU
+result_path: /home/umaru/praktikum/changed_version/2023_visionpractical/exp_week9_meta_transinr/shapenet_transinr/test_13
+
+12/28/2023 20:29:23 - INFO - main_stage_inr.py -   #train samples: 25, #valid samples: 2
+12/28/2023 20:29:23 - INFO - main_stage_inr.py -   [OPTION: ALL] #parameters: 4.1423M
+12/28/2023 20:29:23 - INFO - main_stage_inr.py -   [OPTION: trainable-only] #parameters: 4.1423M
+12/28/2023 20:29:23 - INFO - main_stage_inr.py -   Trainer created. type: <class 'trainer.trainer_stage_inr.Trainer'>
+12/28/2023 20:29:26 - INFO - trainer.trainer_stage_inr -   ep:1, train     , loss_total: 109.1096, mse: 0.0000, psnr: 0.0000, onsurface_loss: 21.2133, spatial_loss: 0.0000, grad_loss: 31.8263, normal_loss: 40.7098, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 460.8043, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:29:26 - INFO - trainer.trainer_stage_inr -   ep:1, valid     , loss_total: 50.8885, mse: 0.0000, psnr: 0.0000, onsurface_loss: 11.2537, spatial_loss: 0.0000, grad_loss: 14.4830, normal_loss: 17.9994, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 214.5748, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:29:29 - INFO - trainer.trainer_stage_inr -   ep:2, train     , loss_total: 86.6494, mse: 0.0000, psnr: 0.0000, onsurface_loss: 16.9027, spatial_loss: 0.0000, grad_loss: 27.3218, normal_loss: 30.5463, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 356.3590, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:29:29 - INFO - trainer.trainer_stage_inr -   ep:2, valid     , loss_total: 46.8217, mse: 0.0000, psnr: 0.0000, onsurface_loss: 12.9009, spatial_loss: 0.0000, grad_loss: 12.2700, normal_loss: 16.2358, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 162.4504, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:29:31 - INFO - trainer.trainer_stage_inr -   ep:3, train     , loss_total: 76.7968, mse: 0.0000, psnr: 0.0000, onsurface_loss: 17.6165, spatial_loss: 0.0000, grad_loss: 23.6965, normal_loss: 26.1157, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 281.0417, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:29:31 - INFO - trainer.trainer_stage_inr -   ep:3, valid     , loss_total: 36.7851, mse: 0.0000, psnr: 0.0000, onsurface_loss: 9.3673, spatial_loss: 0.0000, grad_loss: 11.0584, normal_loss: 12.3309, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 120.8540, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:29:33 - INFO - trainer.trainer_stage_inr -   ep:4, train     , loss_total: 69.8294, mse: 0.0000, psnr: 0.0000, onsurface_loss: 16.6633, spatial_loss: 0.0000, grad_loss: 22.1389, normal_loss: 23.0141, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 240.3953, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:29:33 - INFO - trainer.trainer_stage_inr -   ep:4, valid     , loss_total: 33.1580, mse: 0.0000, psnr: 0.0000, onsurface_loss: 8.3887, spatial_loss: 0.0000, grad_loss: 10.4619, normal_loss: 10.4288, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 116.3587, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:29:35 - INFO - trainer.trainer_stage_inr -   ep:5, train     , loss_total: 66.6938, mse: 0.0000, psnr: 0.0000, onsurface_loss: 18.1444, spatial_loss: 0.0000, grad_loss: 20.8033, normal_loss: 20.6133, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 213.9827, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:29:35 - INFO - trainer.trainer_stage_inr -   ep:5, valid     , loss_total: 31.4271, mse: 0.0000, psnr: 0.0000, onsurface_loss: 8.4490, spatial_loss: 0.0000, grad_loss: 10.1103, normal_loss: 9.4655, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 102.0672, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:29:37 - INFO - trainer.trainer_stage_inr -   ep:6, train     , loss_total: 61.8130, mse: 0.0000, psnr: 0.0000, onsurface_loss: 16.1900, spatial_loss: 0.0000, grad_loss: 19.8807, normal_loss: 19.0810, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 199.8379, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:29:37 - INFO - trainer.trainer_stage_inr -   ep:6, valid     , loss_total: 29.6904, mse: 0.0000, psnr: 0.0000, onsurface_loss: 7.7477, spatial_loss: 0.0000, grad_loss: 9.4729, normal_loss: 9.3224, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 94.4229, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:29:39 - INFO - trainer.trainer_stage_inr -   ep:7, train     , loss_total: 58.9268, mse: 0.0000, psnr: 0.0000, onsurface_loss: 16.0203, spatial_loss: 0.0000, grad_loss: 19.1029, normal_loss: 17.5860, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 186.5288, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:29:39 - INFO - trainer.trainer_stage_inr -   ep:7, valid     , loss_total: 27.7558, mse: 0.0000, psnr: 0.0000, onsurface_loss: 7.8739, spatial_loss: 0.0000, grad_loss: 9.1980, normal_loss: 7.8128, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 86.1333, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:29:41 - INFO - trainer.trainer_stage_inr -   ep:8, train     , loss_total: 56.3700, mse: 0.0000, psnr: 0.0000, onsurface_loss: 15.7375, spatial_loss: 0.0000, grad_loss: 18.5639, normal_loss: 16.2879, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 173.4215, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:29:41 - INFO - trainer.trainer_stage_inr -   ep:8, valid     , loss_total: 25.9593, mse: 0.0000, psnr: 0.0000, onsurface_loss: 6.8464, spatial_loss: 0.0000, grad_loss: 9.0638, normal_loss: 7.3768, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 80.1718, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:29:43 - INFO - trainer.trainer_stage_inr -   ep:9, train     , loss_total: 54.0003, mse: 0.0000, psnr: 0.0000, onsurface_loss: 14.8697, spatial_loss: 0.0000, grad_loss: 18.0883, normal_loss: 15.6096, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 162.9838, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:29:43 - INFO - trainer.trainer_stage_inr -   ep:9, valid     , loss_total: 25.2402, mse: 0.0000, psnr: 0.0000, onsurface_loss: 6.6402, spatial_loss: 0.0000, grad_loss: 8.7472, normal_loss: 7.0253, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 84.8247, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:29:46 - INFO - trainer.trainer_stage_inr -   ep:10, train     , loss_total: 53.1471, mse: 0.0000, psnr: 0.0000, onsurface_loss: 15.7919, spatial_loss: 0.0000, grad_loss: 17.5600, normal_loss: 14.5564, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 157.1625, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:29:46 - INFO - trainer.trainer_stage_inr -   ep:10, valid     , loss_total: 25.2192, mse: 0.0000, psnr: 0.0000, onsurface_loss: 7.0355, spatial_loss: 0.0000, grad_loss: 8.6028, normal_loss: 7.1041, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 74.3048, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:29:48 - INFO - trainer.trainer_stage_inr -   ep:11, train     , loss_total: 52.6716, mse: 0.0000, psnr: 0.0000, onsurface_loss: 16.3991, spatial_loss: 0.0000, grad_loss: 17.2330, normal_loss: 14.0972, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 148.2702, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:29:48 - INFO - trainer.trainer_stage_inr -   ep:11, valid     , loss_total: 24.9494, mse: 0.0000, psnr: 0.0000, onsurface_loss: 7.5744, spatial_loss: 0.0000, grad_loss: 8.4754, normal_loss: 6.3710, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 75.8584, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:29:50 - INFO - trainer.trainer_stage_inr -   ep:12, train     , loss_total: 50.2247, mse: 0.0000, psnr: 0.0000, onsurface_loss: 14.2320, spatial_loss: 0.0000, grad_loss: 17.2411, normal_loss: 13.8713, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 146.4130, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:29:50 - INFO - trainer.trainer_stage_inr -   ep:12, valid     , loss_total: 22.8761, mse: 0.0000, psnr: 0.0000, onsurface_loss: 5.8851, spatial_loss: 0.0000, grad_loss: 8.4095, normal_loss: 6.3118, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 68.0908, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:29:52 - INFO - trainer.trainer_stage_inr -   ep:13, train     , loss_total: 47.5869, mse: 0.0000, psnr: 0.0000, onsurface_loss: 13.6276, spatial_loss: 0.0000, grad_loss: 16.7402, normal_loss: 12.6558, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 136.8997, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:29:52 - INFO - trainer.trainer_stage_inr -   ep:13, valid     , loss_total: 22.4223, mse: 0.0000, psnr: 0.0000, onsurface_loss: 5.7809, spatial_loss: 0.0000, grad_loss: 8.2540, normal_loss: 6.1262, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 67.8395, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:29:54 - INFO - trainer.trainer_stage_inr -   ep:14, train     , loss_total: 47.0252, mse: 0.0000, psnr: 0.0000, onsurface_loss: 13.6205, spatial_loss: 0.0000, grad_loss: 16.4762, normal_loss: 12.5209, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 132.2255, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:29:54 - INFO - trainer.trainer_stage_inr -   ep:14, valid     , loss_total: 21.5815, mse: 0.0000, psnr: 0.0000, onsurface_loss: 5.5662, spatial_loss: 0.0000, grad_loss: 8.0604, normal_loss: 5.8724, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 62.4766, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:29:57 - INFO - trainer.trainer_stage_inr -   ep:15, train     , loss_total: 44.6093, mse: 0.0000, psnr: 0.0000, onsurface_loss: 12.0386, spatial_loss: 0.0000, grad_loss: 16.2713, normal_loss: 11.9933, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 129.1845, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:29:57 - INFO - trainer.trainer_stage_inr -   ep:15, valid     , loss_total: 21.0654, mse: 0.0000, psnr: 0.0000, onsurface_loss: 5.6581, spatial_loss: 0.0000, grad_loss: 7.8634, normal_loss: 5.4916, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 61.5691, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:29:59 - INFO - trainer.trainer_stage_inr -   ep:16, train     , loss_total: 44.5955, mse: 0.0000, psnr: 0.0000, onsurface_loss: 12.8694, spatial_loss: 0.0000, grad_loss: 16.0075, normal_loss: 11.6229, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 122.8699, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:29:59 - INFO - trainer.trainer_stage_inr -   ep:16, valid     , loss_total: 19.9514, mse: 0.0000, psnr: 0.0000, onsurface_loss: 4.9099, spatial_loss: 0.0000, grad_loss: 7.8509, normal_loss: 5.2257, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 58.9482, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:30:01 - INFO - trainer.trainer_stage_inr -   ep:17, train     , loss_total: 43.9028, mse: 0.0000, psnr: 0.0000, onsurface_loss: 12.5683, spatial_loss: 0.0000, grad_loss: 15.9501, normal_loss: 11.4062, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 119.3437, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:30:01 - INFO - trainer.trainer_stage_inr -   ep:17, valid     , loss_total: 20.9520, mse: 0.0000, psnr: 0.0000, onsurface_loss: 5.8668, spatial_loss: 0.0000, grad_loss: 7.8431, normal_loss: 5.2792, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 58.8863, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:30:03 - INFO - trainer.trainer_stage_inr -   ep:18, train     , loss_total: 42.4753, mse: 0.0000, psnr: 0.0000, onsurface_loss: 12.2155, spatial_loss: 0.0000, grad_loss: 15.5589, normal_loss: 10.8860, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 114.4465, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:30:03 - INFO - trainer.trainer_stage_inr -   ep:18, valid     , loss_total: 19.6780, mse: 0.0000, psnr: 0.0000, onsurface_loss: 4.9259, spatial_loss: 0.0000, grad_loss: 7.5930, normal_loss: 5.3404, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 54.5605, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:30:05 - INFO - trainer.trainer_stage_inr -   ep:19, train     , loss_total: 40.3863, mse: 0.0000, psnr: 0.0000, onsurface_loss: 11.2679, spatial_loss: 0.0000, grad_loss: 15.1890, normal_loss: 10.3357, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 107.8089, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:30:05 - INFO - trainer.trainer_stage_inr -   ep:19, valid     , loss_total: 18.5547, mse: 0.0000, psnr: 0.0000, onsurface_loss: 4.6236, spatial_loss: 0.0000, grad_loss: 7.4776, normal_loss: 4.7510, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 51.0748, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:30:07 - INFO - trainer.trainer_stage_inr -   ep:20, train     , loss_total: 40.0135, mse: 0.0000, psnr: 0.0000, onsurface_loss: 11.1473, spatial_loss: 0.0000, grad_loss: 15.1425, normal_loss: 10.2574, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 103.9882, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:30:07 - INFO - trainer.trainer_stage_inr -   ep:20, valid     , loss_total: 21.0952, mse: 0.0000, psnr: 0.0000, onsurface_loss: 7.0105, spatial_loss: 0.0000, grad_loss: 7.3396, normal_loss: 4.8453, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 56.9952, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:30:09 - INFO - trainer.trainer_stage_inr -   ep:21, train     , loss_total: 44.3963, mse: 0.0000, psnr: 0.0000, onsurface_loss: 15.5430, spatial_loss: 0.0000, grad_loss: 15.0685, normal_loss: 10.4473, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 100.1244, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:30:09 - INFO - trainer.trainer_stage_inr -   ep:21, valid     , loss_total: 20.4964, mse: 0.0000, psnr: 0.0000, onsurface_loss: 6.3740, spatial_loss: 0.0000, grad_loss: 7.4482, normal_loss: 4.8479, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 54.7915, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:30:12 - INFO - trainer.trainer_stage_inr -   ep:22, train     , loss_total: 39.9534, mse: 0.0000, psnr: 0.0000, onsurface_loss: 11.2440, spatial_loss: 0.0000, grad_loss: 15.1951, normal_loss: 10.2267, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 98.6256, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:30:12 - INFO - trainer.trainer_stage_inr -   ep:22, valid     , loss_total: 19.1745, mse: 0.0000, psnr: 0.0000, onsurface_loss: 5.4637, spatial_loss: 0.0000, grad_loss: 7.4157, normal_loss: 4.9037, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 41.7412, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:30:14 - INFO - trainer.trainer_stage_inr -   ep:23, train     , loss_total: 41.6549, mse: 0.0000, psnr: 0.0000, onsurface_loss: 12.9191, spatial_loss: 0.0000, grad_loss: 15.0871, normal_loss: 10.4106, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 97.1439, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:30:14 - INFO - trainer.trainer_stage_inr -   ep:23, valid     , loss_total: 19.9556, mse: 0.0000, psnr: 0.0000, onsurface_loss: 5.8480, spatial_loss: 0.0000, grad_loss: 7.6346, normal_loss: 4.9882, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 44.5441, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:30:16 - INFO - trainer.trainer_stage_inr -   ep:24, train     , loss_total: 39.5744, mse: 0.0000, psnr: 0.0000, onsurface_loss: 11.5237, spatial_loss: 0.0000, grad_loss: 15.0413, normal_loss: 9.9292, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 92.4062, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:30:16 - INFO - trainer.trainer_stage_inr -   ep:24, valid     , loss_total: 18.0206, mse: 0.0000, psnr: 0.0000, onsurface_loss: 4.7628, spatial_loss: 0.0000, grad_loss: 7.3029, normal_loss: 4.5002, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 43.6414, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:30:18 - INFO - trainer.trainer_stage_inr -   ep:25, train     , loss_total: 37.9298, mse: 0.0000, psnr: 0.0000, onsurface_loss: 11.1128, spatial_loss: 0.0000, grad_loss: 14.6213, normal_loss: 9.2338, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 88.8573, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:30:18 - INFO - trainer.trainer_stage_inr -   ep:25, valid     , loss_total: 17.4387, mse: 0.0000, psnr: 0.0000, onsurface_loss: 4.3296, spatial_loss: 0.0000, grad_loss: 7.1856, normal_loss: 4.4483, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 44.2581, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:30:20 - INFO - trainer.trainer_stage_inr -   ep:26, train     , loss_total: 36.7396, mse: 0.0000, psnr: 0.0000, onsurface_loss: 10.6187, spatial_loss: 0.0000, grad_loss: 14.5098, normal_loss: 8.7232, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 86.6342, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:30:20 - INFO - trainer.trainer_stage_inr -   ep:26, valid     , loss_total: 17.6795, mse: 0.0000, psnr: 0.0000, onsurface_loss: 4.9450, spatial_loss: 0.0000, grad_loss: 7.0804, normal_loss: 4.2239, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 42.9070, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:30:22 - INFO - trainer.trainer_stage_inr -   ep:27, train     , loss_total: 37.8409, mse: 0.0000, psnr: 0.0000, onsurface_loss: 11.0751, spatial_loss: 0.0000, grad_loss: 14.5983, normal_loss: 9.3005, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 86.0124, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:30:22 - INFO - trainer.trainer_stage_inr -   ep:27, valid     , loss_total: 18.3682, mse: 0.0000, psnr: 0.0000, onsurface_loss: 5.2371, spatial_loss: 0.0000, grad_loss: 7.1391, normal_loss: 4.6574, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 40.0390, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:30:24 - INFO - trainer.trainer_stage_inr -   ep:28, train     , loss_total: 38.6943, mse: 0.0000, psnr: 0.0000, onsurface_loss: 11.7812, spatial_loss: 0.0000, grad_loss: 14.5301, normal_loss: 9.6347, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 82.4472, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:30:24 - INFO - trainer.trainer_stage_inr -   ep:28, valid     , loss_total: 17.3158, mse: 0.0000, psnr: 0.0000, onsurface_loss: 4.7192, spatial_loss: 0.0000, grad_loss: 6.9815, normal_loss: 4.2579, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 40.7194, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:30:26 - INFO - trainer.trainer_stage_inr -   ep:29, train     , loss_total: 36.0329, mse: 0.0000, psnr: 0.0000, onsurface_loss: 10.1467, spatial_loss: 0.0000, grad_loss: 14.3951, normal_loss: 8.8692, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 78.6537, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:30:26 - INFO - trainer.trainer_stage_inr -   ep:29, valid     , loss_total: 17.2924, mse: 0.0000, psnr: 0.0000, onsurface_loss: 5.1963, spatial_loss: 0.0000, grad_loss: 6.9751, normal_loss: 3.7443, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 41.3009, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:30:29 - INFO - trainer.trainer_stage_inr -   ep:30, train     , loss_total: 38.6574, mse: 0.0000, psnr: 0.0000, onsurface_loss: 13.0585, spatial_loss: 0.0000, grad_loss: 14.1934, normal_loss: 8.8209, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 77.5352, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:30:29 - INFO - trainer.trainer_stage_inr -   ep:30, valid     , loss_total: 22.5575, mse: 0.0000, psnr: 0.0000, onsurface_loss: 9.8540, spatial_loss: 0.0000, grad_loss: 7.0454, normal_loss: 4.1274, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 45.9232, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:30:31 - INFO - trainer.trainer_stage_inr -   ep:31, train     , loss_total: 40.4912, mse: 0.0000, psnr: 0.0000, onsurface_loss: 14.5907, spatial_loss: 0.0000, grad_loss: 14.2430, normal_loss: 9.1933, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 73.9287, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:30:31 - INFO - trainer.trainer_stage_inr -   ep:31, valid     , loss_total: 18.9916, mse: 0.0000, psnr: 0.0000, onsurface_loss: 6.1503, spatial_loss: 0.0000, grad_loss: 7.0536, normal_loss: 4.4851, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 39.0799, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:30:33 - INFO - trainer.trainer_stage_inr -   ep:32, train     , loss_total: 37.5336, mse: 0.0000, psnr: 0.0000, onsurface_loss: 12.3320, spatial_loss: 0.0000, grad_loss: 14.1536, normal_loss: 8.6271, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 72.6262, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:30:33 - INFO - trainer.trainer_stage_inr -   ep:32, valid     , loss_total: 18.4127, mse: 0.0000, psnr: 0.0000, onsurface_loss: 5.7979, spatial_loss: 0.0000, grad_loss: 6.9558, normal_loss: 4.3985, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 37.8132, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:30:35 - INFO - trainer.trainer_stage_inr -   ep:33, train     , loss_total: 36.7250, mse: 0.0000, psnr: 0.0000, onsurface_loss: 11.8263, spatial_loss: 0.0000, grad_loss: 14.0156, normal_loss: 8.5693, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 69.4151, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:30:35 - INFO - trainer.trainer_stage_inr -   ep:33, valid     , loss_total: 16.2171, mse: 0.0000, psnr: 0.0000, onsurface_loss: 4.4651, spatial_loss: 0.0000, grad_loss: 6.7755, normal_loss: 3.8737, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 33.0843, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:30:37 - INFO - trainer.trainer_stage_inr -   ep:34, train     , loss_total: 34.3162, mse: 0.0000, psnr: 0.0000, onsurface_loss: 9.8348, spatial_loss: 0.0000, grad_loss: 14.0822, normal_loss: 8.1968, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 66.0736, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:30:37 - INFO - trainer.trainer_stage_inr -   ep:34, valid     , loss_total: 15.3916, mse: 0.0000, psnr: 0.0000, onsurface_loss: 4.1308, spatial_loss: 0.0000, grad_loss: 6.7225, normal_loss: 3.4408, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 32.9236, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:30:40 - INFO - trainer.trainer_stage_inr -   ep:35, train     , loss_total: 34.1081, mse: 0.0000, psnr: 0.0000, onsurface_loss: 9.9943, spatial_loss: 0.0000, grad_loss: 13.8367, normal_loss: 8.1251, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 64.5590, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:30:40 - INFO - trainer.trainer_stage_inr -   ep:35, valid     , loss_total: 16.3660, mse: 0.0000, psnr: 0.0000, onsurface_loss: 4.8776, spatial_loss: 0.0000, grad_loss: 6.6661, normal_loss: 3.7662, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 31.6836, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:30:42 - INFO - trainer.trainer_stage_inr -   ep:36, train     , loss_total: 33.9812, mse: 0.0000, psnr: 0.0000, onsurface_loss: 10.1880, spatial_loss: 0.0000, grad_loss: 13.7574, normal_loss: 7.9940, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 61.2507, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:30:42 - INFO - trainer.trainer_stage_inr -   ep:36, valid     , loss_total: 15.2615, mse: 0.0000, psnr: 0.0000, onsurface_loss: 3.9750, spatial_loss: 0.0000, grad_loss: 6.6236, normal_loss: 3.6803, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 29.4786, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:30:44 - INFO - trainer.trainer_stage_inr -   ep:37, train     , loss_total: 34.1322, mse: 0.0000, psnr: 0.0000, onsurface_loss: 10.2990, spatial_loss: 0.0000, grad_loss: 13.6030, normal_loss: 8.2061, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 60.7218, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:30:44 - INFO - trainer.trainer_stage_inr -   ep:37, valid     , loss_total: 16.3009, mse: 0.0000, psnr: 0.0000, onsurface_loss: 4.5845, spatial_loss: 0.0000, grad_loss: 6.7654, normal_loss: 3.9883, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 28.8826, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:30:46 - INFO - trainer.trainer_stage_inr -   ep:38, train     , loss_total: 34.2599, mse: 0.0000, psnr: 0.0000, onsurface_loss: 10.3309, spatial_loss: 0.0000, grad_loss: 13.8090, normal_loss: 8.2750, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 55.3478, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:30:46 - INFO - trainer.trainer_stage_inr -   ep:38, valid     , loss_total: 15.3904, mse: 0.0000, psnr: 0.0000, onsurface_loss: 4.2365, spatial_loss: 0.0000, grad_loss: 6.6773, normal_loss: 3.5459, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 27.9205, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:30:49 - INFO - trainer.trainer_stage_inr -   ep:39, train     , loss_total: 34.2542, mse: 0.0000, psnr: 0.0000, onsurface_loss: 10.4171, spatial_loss: 0.0000, grad_loss: 13.7603, normal_loss: 8.2617, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 54.4529, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:30:49 - INFO - trainer.trainer_stage_inr -   ep:39, valid     , loss_total: 16.1095, mse: 0.0000, psnr: 0.0000, onsurface_loss: 4.7099, spatial_loss: 0.0000, grad_loss: 6.6310, normal_loss: 3.7936, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 29.2492, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:30:51 - INFO - trainer.trainer_stage_inr -   ep:40, train     , loss_total: 33.4627, mse: 0.0000, psnr: 0.0000, onsurface_loss: 10.0325, spatial_loss: 0.0000, grad_loss: 13.6706, normal_loss: 8.0522, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 51.2228, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:30:51 - INFO - trainer.trainer_stage_inr -   ep:40, valid     , loss_total: 15.1352, mse: 0.0000, psnr: 0.0000, onsurface_loss: 4.0362, spatial_loss: 0.0000, grad_loss: 6.6027, normal_loss: 3.5966, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 26.9887, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:30:53 - INFO - trainer.trainer_stage_inr -   ep:41, train     , loss_total: 32.4932, mse: 0.0000, psnr: 0.0000, onsurface_loss: 9.3717, spatial_loss: 0.0000, grad_loss: 13.6092, normal_loss: 7.8641, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 49.4456, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:30:53 - INFO - trainer.trainer_stage_inr -   ep:41, valid     , loss_total: 14.9363, mse: 0.0000, psnr: 0.0000, onsurface_loss: 4.0045, spatial_loss: 0.0000, grad_loss: 6.4751, normal_loss: 3.5910, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 25.9694, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:30:55 - INFO - trainer.trainer_stage_inr -   ep:42, train     , loss_total: 33.9496, mse: 0.0000, psnr: 0.0000, onsurface_loss: 10.2630, spatial_loss: 0.0000, grad_loss: 13.6110, normal_loss: 8.4048, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 50.1247, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:30:55 - INFO - trainer.trainer_stage_inr -   ep:42, valid     , loss_total: 15.3986, mse: 0.0000, psnr: 0.0000, onsurface_loss: 4.5764, spatial_loss: 0.0000, grad_loss: 6.5666, normal_loss: 3.4929, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 22.8806, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:30:58 - INFO - trainer.trainer_stage_inr -   ep:43, train     , loss_total: 33.4072, mse: 0.0000, psnr: 0.0000, onsurface_loss: 10.7419, spatial_loss: 0.0000, grad_loss: 13.3938, normal_loss: 7.6120, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 49.7864, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:30:58 - INFO - trainer.trainer_stage_inr -   ep:43, valid     , loss_total: 15.7294, mse: 0.0000, psnr: 0.0000, onsurface_loss: 4.7574, spatial_loss: 0.0000, grad_loss: 6.6861, normal_loss: 3.6326, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 19.5995, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:31:00 - INFO - trainer.trainer_stage_inr -   ep:44, train     , loss_total: 31.7955, mse: 0.0000, psnr: 0.0000, onsurface_loss: 9.5650, spatial_loss: 0.0000, grad_loss: 13.3442, normal_loss: 7.3014, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 47.5453, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:31:00 - INFO - trainer.trainer_stage_inr -   ep:44, valid     , loss_total: 14.9094, mse: 0.0000, psnr: 0.0000, onsurface_loss: 3.9563, spatial_loss: 0.0000, grad_loss: 6.4646, normal_loss: 3.7384, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 22.5008, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:31:02 - INFO - trainer.trainer_stage_inr -   ep:45, train     , loss_total: 32.0817, mse: 0.0000, psnr: 0.0000, onsurface_loss: 9.2187, spatial_loss: 0.0000, grad_loss: 13.2899, normal_loss: 8.0170, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 46.6819, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:31:02 - INFO - trainer.trainer_stage_inr -   ep:45, valid     , loss_total: 15.2660, mse: 0.0000, psnr: 0.0000, onsurface_loss: 3.9862, spatial_loss: 0.0000, grad_loss: 6.5091, normal_loss: 4.1050, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 19.9672, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:31:04 - INFO - trainer.trainer_stage_inr -   ep:46, train     , loss_total: 31.8560, mse: 0.0000, psnr: 0.0000, onsurface_loss: 9.0801, spatial_loss: 0.0000, grad_loss: 13.1348, normal_loss: 8.1345, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 45.1960, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:31:04 - INFO - trainer.trainer_stage_inr -   ep:46, valid     , loss_total: 14.8458, mse: 0.0000, psnr: 0.0000, onsurface_loss: 4.0901, spatial_loss: 0.0000, grad_loss: 6.4897, normal_loss: 3.4795, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 23.5962, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:31:06 - INFO - trainer.trainer_stage_inr -   ep:47, train     , loss_total: 31.9043, mse: 0.0000, psnr: 0.0000, onsurface_loss: 9.4817, spatial_loss: 0.0000, grad_loss: 13.1626, normal_loss: 7.8150, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 43.3489, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:31:06 - INFO - trainer.trainer_stage_inr -   ep:47, valid     , loss_total: 14.3985, mse: 0.0000, psnr: 0.0000, onsurface_loss: 3.8363, spatial_loss: 0.0000, grad_loss: 6.5080, normal_loss: 3.3383, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 21.4798, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:31:08 - INFO - trainer.trainer_stage_inr -   ep:48, train     , loss_total: 30.4392, mse: 0.0000, psnr: 0.0000, onsurface_loss: 8.8409, spatial_loss: 0.0000, grad_loss: 13.0220, normal_loss: 7.1723, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 42.1198, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:31:08 - INFO - trainer.trainer_stage_inr -   ep:48, valid     , loss_total: 14.0178, mse: 0.0000, psnr: 0.0000, onsurface_loss: 3.9534, spatial_loss: 0.0000, grad_loss: 6.3281, normal_loss: 3.0980, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 19.1484, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:31:11 - INFO - trainer.trainer_stage_inr -   ep:49, train     , loss_total: 30.7800, mse: 0.0000, psnr: 0.0000, onsurface_loss: 9.1193, spatial_loss: 0.0000, grad_loss: 13.0049, normal_loss: 7.2404, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 42.4623, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:31:11 - INFO - trainer.trainer_stage_inr -   ep:49, valid     , loss_total: 13.8511, mse: 0.0000, psnr: 0.0000, onsurface_loss: 3.6811, spatial_loss: 0.0000, grad_loss: 6.2383, normal_loss: 3.2764, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 19.6576, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e+01
+12/28/2023 20:31:27 - INFO - main_stage_inr.py -   DistEnv(world_size=1, world_rank=0, local_rank=0, num_gpus=1, master=True, device_name='NVIDIA GeForce RTX 3060 Laptop GPU')
+12/28/2023 20:31:27 - INFO - main_stage_inr.py -   log_path: /home/umaru/praktikum/changed_version/2023_visionpractical/exp_week9_meta_transinr/shapenet_transinr/test_13
+12/28/2023 20:31:27 - INFO - main_stage_inr.py -   
+arch:
+  type: low_rank_modulated_transinr
+  ema: null
+  data_encoder:
+    type: PointNet2
+    n_channel: 3
+    trainable: true
+    encoder_spec:
+      patch_size: 9
+      padding: 1
+  latent_mapping:
+    type: linear
+    n_patches: 500
+    n_layer: 1
+    activation: relu
+    hidden_dim:
+    - 256
+    latent_dim: 768
+    use_pe: true
+  transformer:
+    n_layer: 4
+    embed_dim: 256
+    mask: false
+    block:
+      embed_dim: 256
+      n_head: 32
+      mlp_bias: true
+      attn_bias: true
+      attn_pdrop: 0.0
+      resid_pdrop: 0.1
+      gelu: v1
+  hyponet:
+    type: mlp
+    n_layer: 6
+    hidden_dim:
+    - 256
+    use_bias: true
+    share_bias: false
+    input_dim: 3
+    output_dim: 2
+    output_bias: 0.0
+    fourier_mapping:
+      type: siren
+      trainable: false
+      use_ff: false
+      ff_sigma: 0
+      ff_dim: 0
+    activation:
+      type: siren
+      siren_w0: 30.0
+    initialization:
+      weight_init_type: siren
+      bias_init_type: siren
+    normalize_weight: true
+  coord_sampler:
+    data_type: image
+    coord_range:
+    - -1.0
+    - 1.0
+    train_strategy: null
+    val_strategy: null
+  n_weight_groups:
+  - 257
+  modulated_layer_idxs:
+  - 1
+dataset:
+  transforms:
+    type: shapenet
+  type: shapenet
+  supervision: siren_sdf
+  folder: /home/umaru/PycharmProjects/meta_shaope/data/1shape
+optimizer:
+  type: adam_hyper
+  max_gn: null
+  warmup:
+    mode: adaptive
+    start_from_zero: true
+    epoch: 0
+    multiplier: 1
+    buffer_epoch: 0
+    step_size: 1000
+    min_lr: 0.0001
+    patience_adaptive: 20000
+    factor: 0.9
+    threshold: 0
+  init_lr: 0.0001
+  weight_decay: 0.0
+  betas:
+  - 0.9
+  - 0.999
+  grad_accm_steps: 1
+experiment:
+  test_freq: 1
+  amp: true
+  batch_size: 2
+  total_batch_size: 2
+  epochs_cos: 30
+  epochs: 40000
+  save_ckpt_freq: 500
+  test_imlog_freq: 100
+loss:
+  type: mse
+  subsample:
+    type: null
+    ratio: 0.1
+  coord_noise: coordwise
+type: generalization
+trainer: stage_inr
+seed: 0
+runtime:
+  args:
+    model_config: /home/umaru/praktikum/changed_version/2023_visionpractical/config/shapenet_transinr.yaml
+    result_path: /home/umaru/praktikum/changed_version/2023_visionpractical/exp_week9_meta_transinr
+    task: test_13
+    load_path: ''
+    postfix: ''
+    seed: 0
+    eval: false
+    resume: false
+    world_size: 1
+    local_rank: 0
+    node_rank: 0
+    nnodes: 1
+    nproc_per_node: 1
+    dist_backend: nccl
+    timeout: 1
+    rank: 0
+  extra_config: {}
+  distenv:
+    world_size: 1
+    world_rank: 0
+    local_rank: 0
+    num_gpus: 1
+    master: true
+    device_name: NVIDIA GeForce RTX 3060 Laptop GPU
+result_path: /home/umaru/praktikum/changed_version/2023_visionpractical/exp_week9_meta_transinr/shapenet_transinr/test_13
+
+12/28/2023 20:31:27 - INFO - main_stage_inr.py -   #train samples: 25, #valid samples: 2
+12/28/2023 20:31:27 - INFO - main_stage_inr.py -   [OPTION: ALL] #parameters: 4.1423M
+12/28/2023 20:31:27 - INFO - main_stage_inr.py -   [OPTION: trainable-only] #parameters: 4.1423M
+12/28/2023 20:31:27 - INFO - main_stage_inr.py -   Trainer created. type: <class 'trainer.trainer_stage_inr.Trainer'>
+12/28/2023 20:31:30 - INFO - trainer.trainer_stage_inr -   ep:1, train     , loss_total: 108.6343, mse: 0.0000, psnr: 0.0000, onsurface_loss: 21.2831, spatial_loss: 0.0000, grad_loss: 31.0144, normal_loss: 40.8264, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 465.3126, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e-04
+12/28/2023 20:31:30 - INFO - trainer.trainer_stage_inr -   ep:1, valid     , loss_total: 46.9793, mse: 0.0000, psnr: 0.0000, onsurface_loss: 8.7156, spatial_loss: 0.0000, grad_loss: 13.9968, normal_loss: 17.2360, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 210.9277, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e-04
+12/28/2023 20:31:32 - INFO - trainer.trainer_stage_inr -   ep:2, train     , loss_total: 88.6001, mse: 0.0000, psnr: 0.0000, onsurface_loss: 18.4375, spatial_loss: 0.0000, grad_loss: 26.0694, normal_loss: 31.6912, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 372.0605, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e-04
+12/28/2023 20:31:32 - INFO - trainer.trainer_stage_inr -   ep:2, valid     , loss_total: 40.1745, mse: 0.0000, psnr: 0.0000, onsurface_loss: 8.8100, spatial_loss: 0.0000, grad_loss: 12.0191, normal_loss: 13.9026, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 163.2838, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e-04
+12/28/2023 20:31:34 - INFO - trainer.trainer_stage_inr -   ep:3, train     , loss_total: 79.9258, mse: 0.0000, psnr: 0.0000, onsurface_loss: 20.0810, spatial_loss: 0.0000, grad_loss: 23.2428, normal_loss: 27.0620, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 286.2020, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e-04
+12/28/2023 20:31:34 - INFO - trainer.trainer_stage_inr -   ep:3, valid     , loss_total: 36.7688, mse: 0.0000, psnr: 0.0000, onsurface_loss: 8.9412, spatial_loss: 0.0000, grad_loss: 11.2094, normal_loss: 12.1601, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 133.7456, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e-04
+12/28/2023 20:31:36 - INFO - trainer.trainer_stage_inr -   ep:4, train     , loss_total: 72.0355, mse: 0.0000, psnr: 0.0000, onsurface_loss: 18.2633, spatial_loss: 0.0000, grad_loss: 21.9245, normal_loss: 23.5623, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 248.5621, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e-04
+12/28/2023 20:31:36 - INFO - trainer.trainer_stage_inr -   ep:4, valid     , loss_total: 31.3981, mse: 0.0000, psnr: 0.0000, onsurface_loss: 6.9922, spatial_loss: 0.0000, grad_loss: 10.5457, normal_loss: 10.1819, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 110.3498, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e-04
+12/28/2023 20:31:38 - INFO - trainer.trainer_stage_inr -   ep:5, train     , loss_total: 64.5492, mse: 0.0000, psnr: 0.0000, onsurface_loss: 15.5827, spatial_loss: 0.0000, grad_loss: 21.0141, normal_loss: 20.9255, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 210.8076, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e-04
+12/28/2023 20:31:38 - INFO - trainer.trainer_stage_inr -   ep:5, valid     , loss_total: 31.4828, mse: 0.0000, psnr: 0.0000, onsurface_loss: 8.1378, spatial_loss: 0.0000, grad_loss: 10.2372, normal_loss: 9.5703, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 106.1259, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e-04
+12/28/2023 20:31:40 - INFO - trainer.trainer_stage_inr -   ep:6, train     , loss_total: 62.9428, mse: 0.0000, psnr: 0.0000, onsurface_loss: 16.7884, spatial_loss: 0.0000, grad_loss: 20.4014, normal_loss: 19.3778, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 191.2559, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e-04
+12/28/2023 20:31:40 - INFO - trainer.trainer_stage_inr -   ep:6, valid     , loss_total: 28.8236, mse: 0.0000, psnr: 0.0000, onsurface_loss: 6.8438, spatial_loss: 0.0000, grad_loss: 9.9984, normal_loss: 8.9426, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 91.1633, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e-04
+12/28/2023 20:31:42 - INFO - trainer.trainer_stage_inr -   ep:7, train     , loss_total: 59.0932, mse: 0.0000, psnr: 0.0000, onsurface_loss: 15.8779, spatial_loss: 0.0000, grad_loss: 19.8875, normal_loss: 17.8436, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 164.5247, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e-04
+12/28/2023 20:31:42 - INFO - trainer.trainer_stage_inr -   ep:7, valid     , loss_total: 26.9399, mse: 0.0000, psnr: 0.0000, onsurface_loss: 6.6707, spatial_loss: 0.0000, grad_loss: 9.6308, normal_loss: 8.0582, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 77.4063, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e-04
+12/28/2023 20:31:44 - INFO - trainer.trainer_stage_inr -   ep:8, train     , loss_total: 57.7933, mse: 0.0000, psnr: 0.0000, onsurface_loss: 16.3360, spatial_loss: 0.0000, grad_loss: 19.3389, normal_loss: 17.1321, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 149.5908, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e-04
+12/28/2023 20:31:44 - INFO - trainer.trainer_stage_inr -   ep:8, valid     , loss_total: 25.9058, mse: 0.0000, psnr: 0.0000, onsurface_loss: 6.6720, spatial_loss: 0.0000, grad_loss: 9.4059, normal_loss: 7.5830, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 67.3476, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e-04
+12/28/2023 20:31:46 - INFO - trainer.trainer_stage_inr -   ep:9, train     , loss_total: 54.9344, mse: 0.0000, psnr: 0.0000, onsurface_loss: 15.4004, spatial_loss: 0.0000, grad_loss: 18.7794, normal_loss: 16.2370, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 135.5308, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e-04
+12/28/2023 20:31:46 - INFO - trainer.trainer_stage_inr -   ep:9, valid     , loss_total: 25.5818, mse: 0.0000, psnr: 0.0000, onsurface_loss: 6.8727, spatial_loss: 0.0000, grad_loss: 9.1369, normal_loss: 7.3224, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 67.4980, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e-04
+12/28/2023 20:31:48 - INFO - trainer.trainer_stage_inr -   ep:10, train     , loss_total: 52.1754, mse: 0.0000, psnr: 0.0000, onsurface_loss: 14.9177, spatial_loss: 0.0000, grad_loss: 18.3512, normal_loss: 14.7604, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 124.3857, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e-04
+12/28/2023 20:31:48 - INFO - trainer.trainer_stage_inr -   ep:10, valid     , loss_total: 24.4400, mse: 0.0000, psnr: 0.0000, onsurface_loss: 6.2950, spatial_loss: 0.0000, grad_loss: 9.0252, normal_loss: 7.0773, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 61.2771, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e-04
+12/28/2023 20:31:50 - INFO - trainer.trainer_stage_inr -   ep:11, train     , loss_total: 51.8092, mse: 0.0000, psnr: 0.0000, onsurface_loss: 15.3147, spatial_loss: 0.0000, grad_loss: 18.0996, normal_loss: 14.5226, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 116.1700, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e-04
+12/28/2023 20:31:50 - INFO - trainer.trainer_stage_inr -   ep:11, valid     , loss_total: 26.5196, mse: 0.0000, psnr: 0.0000, onsurface_loss: 8.9112, spatial_loss: 0.0000, grad_loss: 9.0495, normal_loss: 6.6325, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 57.7944, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e-04
+12/28/2023 20:31:53 - INFO - trainer.trainer_stage_inr -   ep:12, train     , loss_total: 51.3164, mse: 0.0000, psnr: 0.0000, onsurface_loss: 15.3203, spatial_loss: 0.0000, grad_loss: 18.1233, normal_loss: 14.4240, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 103.4642, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e-04
+12/28/2023 20:31:53 - INFO - trainer.trainer_stage_inr -   ep:12, valid     , loss_total: 23.6205, mse: 0.0000, psnr: 0.0000, onsurface_loss: 6.2828, spatial_loss: 0.0000, grad_loss: 9.0443, normal_loss: 6.5218, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 53.1500, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e-04
+12/28/2023 20:31:55 - INFO - trainer.trainer_stage_inr -   ep:13, train     , loss_total: 48.1997, mse: 0.0000, psnr: 0.0000, onsurface_loss: 13.8940, spatial_loss: 0.0000, grad_loss: 17.7483, normal_loss: 13.3391, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 96.5482, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e-04
+12/28/2023 20:31:55 - INFO - trainer.trainer_stage_inr -   ep:13, valid     , loss_total: 22.9947, mse: 0.0000, psnr: 0.0000, onsurface_loss: 6.3564, spatial_loss: 0.0000, grad_loss: 8.6068, normal_loss: 6.4415, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 47.6976, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e-04
+12/28/2023 20:31:57 - INFO - trainer.trainer_stage_inr -   ep:14, train     , loss_total: 48.5103, mse: 0.0000, psnr: 0.0000, onsurface_loss: 15.3633, spatial_loss: 0.0000, grad_loss: 17.4402, normal_loss: 12.7401, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 89.0008, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e-04
+12/28/2023 20:31:57 - INFO - trainer.trainer_stage_inr -   ep:14, valid     , loss_total: 23.0719, mse: 0.0000, psnr: 0.0000, onsurface_loss: 7.1758, spatial_loss: 0.0000, grad_loss: 8.5869, normal_loss: 6.0341, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 38.2547, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e-04
+12/28/2023 20:31:59 - INFO - trainer.trainer_stage_inr -   ep:15, train     , loss_total: 46.2322, mse: 0.0000, psnr: 0.0000, onsurface_loss: 13.6672, spatial_loss: 0.0000, grad_loss: 17.4125, normal_loss: 12.3670, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 83.5647, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e-04
+12/28/2023 20:31:59 - INFO - trainer.trainer_stage_inr -   ep:15, valid     , loss_total: 20.2707, mse: 0.0000, psnr: 0.0000, onsurface_loss: 4.8857, spatial_loss: 0.0000, grad_loss: 8.4626, normal_loss: 5.5733, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 40.4744, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e-04
+12/28/2023 20:32:01 - INFO - trainer.trainer_stage_inr -   ep:16, train     , loss_total: 43.4313, mse: 0.0000, psnr: 0.0000, onsurface_loss: 12.0436, spatial_loss: 0.0000, grad_loss: 17.1001, normal_loss: 11.7810, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 75.1999, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e-04
+12/28/2023 20:32:01 - INFO - trainer.trainer_stage_inr -   ep:16, valid     , loss_total: 19.8594, mse: 0.0000, psnr: 0.0000, onsurface_loss: 4.7465, spatial_loss: 0.0000, grad_loss: 8.3217, normal_loss: 5.6379, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 34.5980, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e-04
+12/28/2023 20:32:04 - INFO - trainer.trainer_stage_inr -   ep:17, train     , loss_total: 42.3977, mse: 0.0000, psnr: 0.0000, onsurface_loss: 11.9488, spatial_loss: 0.0000, grad_loss: 16.8953, normal_loss: 11.3129, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 67.2189, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e-04
+12/28/2023 20:32:04 - INFO - trainer.trainer_stage_inr -   ep:17, valid     , loss_total: 21.0949, mse: 0.0000, psnr: 0.0000, onsurface_loss: 6.6283, spatial_loss: 0.0000, grad_loss: 8.1305, normal_loss: 5.2349, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 33.0343, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e-04
+12/28/2023 20:32:06 - INFO - trainer.trainer_stage_inr -   ep:18, train     , loss_total: 42.6070, mse: 0.0000, psnr: 0.0000, onsurface_loss: 12.9688, spatial_loss: 0.0000, grad_loss: 16.4981, normal_loss: 10.9676, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 65.1773, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e-04
+12/28/2023 20:32:06 - INFO - trainer.trainer_stage_inr -   ep:18, valid     , loss_total: 19.2274, mse: 0.0000, psnr: 0.0000, onsurface_loss: 4.8127, spatial_loss: 0.0000, grad_loss: 8.1521, normal_loss: 5.1509, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 33.3474, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e-04
+12/28/2023 20:32:08 - INFO - trainer.trainer_stage_inr -   ep:19, train     , loss_total: 40.9921, mse: 0.0000, psnr: 0.0000, onsurface_loss: 12.1601, spatial_loss: 0.0000, grad_loss: 16.2128, normal_loss: 10.6661, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 58.5942, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e-04
+12/28/2023 20:32:08 - INFO - trainer.trainer_stage_inr -   ep:19, valid     , loss_total: 18.2609, mse: 0.0000, psnr: 0.0000, onsurface_loss: 4.6055, spatial_loss: 0.0000, grad_loss: 7.9817, normal_loss: 4.7265, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 28.4190, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e-04
+12/28/2023 20:32:10 - INFO - trainer.trainer_stage_inr -   ep:20, train     , loss_total: 39.6157, mse: 0.0000, psnr: 0.0000, onsurface_loss: 11.5435, spatial_loss: 0.0000, grad_loss: 16.1110, normal_loss: 10.1441, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 54.5160, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e-04
+12/28/2023 20:32:10 - INFO - trainer.trainer_stage_inr -   ep:20, valid     , loss_total: 19.4975, mse: 0.0000, psnr: 0.0000, onsurface_loss: 5.7959, spatial_loss: 0.0000, grad_loss: 8.0185, normal_loss: 4.6843, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 29.9661, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e-04
+12/28/2023 20:32:11 - INFO - trainer.trainer_stage_inr -   ep:21, train     , loss_total: 41.1361, mse: 0.0000, psnr: 0.0000, onsurface_loss: 13.5336, spatial_loss: 0.0000, grad_loss: 15.8105, normal_loss: 10.0780, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 51.4181, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e-04
+12/28/2023 20:32:11 - INFO - trainer.trainer_stage_inr -   ep:21, valid     , loss_total: 18.7977, mse: 0.0000, psnr: 0.0000, onsurface_loss: 5.3605, spatial_loss: 0.0000, grad_loss: 7.8818, normal_loss: 4.6707, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 26.5386, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e-04
+12/28/2023 20:32:13 - INFO - trainer.trainer_stage_inr -   ep:22, train     , loss_total: 39.0863, mse: 0.0000, psnr: 0.0000, onsurface_loss: 11.4482, spatial_loss: 0.0000, grad_loss: 16.0172, normal_loss: 10.0090, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 48.3599, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e-04
+12/28/2023 20:32:13 - INFO - trainer.trainer_stage_inr -   ep:22, valid     , loss_total: 19.8901, mse: 0.0000, psnr: 0.0000, onsurface_loss: 6.1252, spatial_loss: 0.0000, grad_loss: 7.9112, normal_loss: 4.9243, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 27.8833, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e-04
+12/28/2023 20:32:15 - INFO - trainer.trainer_stage_inr -   ep:23, train     , loss_total: 40.3734, mse: 0.0000, psnr: 0.0000, onsurface_loss: 12.5254, spatial_loss: 0.0000, grad_loss: 15.8716, normal_loss: 10.5514, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 42.7494, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e-04
+12/28/2023 20:32:15 - INFO - trainer.trainer_stage_inr -   ep:23, valid     , loss_total: 18.7241, mse: 0.0000, psnr: 0.0000, onsurface_loss: 5.3933, spatial_loss: 0.0000, grad_loss: 7.8888, normal_loss: 4.6556, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 23.5931, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e-04
+12/28/2023 20:32:17 - INFO - trainer.trainer_stage_inr -   ep:24, train     , loss_total: 37.9821, mse: 0.0000, psnr: 0.0000, onsurface_loss: 10.8781, spatial_loss: 0.0000, grad_loss: 15.8202, normal_loss: 9.8962, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 41.6295, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e-04
+12/28/2023 20:32:17 - INFO - trainer.trainer_stage_inr -   ep:24, valid     , loss_total: 17.6409, mse: 0.0000, psnr: 0.0000, onsurface_loss: 4.8920, spatial_loss: 0.0000, grad_loss: 7.6542, normal_loss: 4.3679, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 21.8024, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e-04
+12/28/2023 20:32:19 - INFO - trainer.trainer_stage_inr -   ep:25, train     , loss_total: 37.1292, mse: 0.0000, psnr: 0.0000, onsurface_loss: 10.8358, spatial_loss: 0.0000, grad_loss: 15.4784, normal_loss: 9.4432, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 41.1522, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e-04
+12/28/2023 20:32:19 - INFO - trainer.trainer_stage_inr -   ep:25, valid     , loss_total: 17.5083, mse: 0.0000, psnr: 0.0000, onsurface_loss: 4.4425, spatial_loss: 0.0000, grad_loss: 7.6530, normal_loss: 4.7282, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 20.5359, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e-04
+12/28/2023 20:32:20 - INFO - trainer.trainer_stage_inr -   ep:26, train     , loss_total: 36.3997, mse: 0.0000, psnr: 0.0000, onsurface_loss: 10.7466, spatial_loss: 0.0000, grad_loss: 15.2736, normal_loss: 9.0980, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 38.4494, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e-04
+12/28/2023 20:32:20 - INFO - trainer.trainer_stage_inr -   ep:26, valid     , loss_total: 16.5061, mse: 0.0000, psnr: 0.0000, onsurface_loss: 4.2099, spatial_loss: 0.0000, grad_loss: 7.4534, normal_loss: 4.2506, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 17.7690, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e-04
+12/28/2023 20:32:22 - INFO - trainer.trainer_stage_inr -   ep:27, train     , loss_total: 36.4460, mse: 0.0000, psnr: 0.0000, onsurface_loss: 10.7597, spatial_loss: 0.0000, grad_loss: 15.2790, normal_loss: 9.1803, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 36.8144, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e-04
+12/28/2023 20:32:22 - INFO - trainer.trainer_stage_inr -   ep:27, valid     , loss_total: 17.4017, mse: 0.0000, psnr: 0.0000, onsurface_loss: 5.1102, spatial_loss: 0.0000, grad_loss: 7.4629, normal_loss: 4.3454, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 14.4988, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e-04
+12/28/2023 20:32:24 - INFO - trainer.trainer_stage_inr -   ep:28, train     , loss_total: 36.7833, mse: 0.0000, psnr: 0.0000, onsurface_loss: 11.2389, spatial_loss: 0.0000, grad_loss: 15.1834, normal_loss: 9.2479, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 33.3951, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e-04
+12/28/2023 20:32:24 - INFO - trainer.trainer_stage_inr -   ep:28, valid     , loss_total: 17.9144, mse: 0.0000, psnr: 0.0000, onsurface_loss: 5.4068, spatial_loss: 0.0000, grad_loss: 7.3908, normal_loss: 4.5183, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 17.9547, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e-04
+12/28/2023 20:32:26 - INFO - trainer.trainer_stage_inr -   ep:29, train     , loss_total: 38.2924, mse: 0.0000, psnr: 0.0000, onsurface_loss: 12.5269, spatial_loss: 0.0000, grad_loss: 15.1863, normal_loss: 9.3881, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 35.7313, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e-04
+12/28/2023 20:32:26 - INFO - trainer.trainer_stage_inr -   ep:29, valid     , loss_total: 19.7741, mse: 0.0000, psnr: 0.0000, onsurface_loss: 7.5977, spatial_loss: 0.0000, grad_loss: 7.4393, normal_loss: 3.9960, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 22.2333, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e-04
+12/28/2023 20:32:28 - INFO - trainer.trainer_stage_inr -   ep:30, train     , loss_total: 47.8858, mse: 0.0000, psnr: 0.0000, onsurface_loss: 21.5940, spatial_loss: 0.0000, grad_loss: 15.4371, normal_loss: 9.6568, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 35.9394, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e-04
+12/28/2023 20:32:28 - INFO - trainer.trainer_stage_inr -   ep:30, valid     , loss_total: 19.5084, mse: 0.0000, psnr: 0.0000, onsurface_loss: 6.8640, spatial_loss: 0.0000, grad_loss: 7.6373, normal_loss: 4.6081, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 11.9693, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e-04
+12/28/2023 20:32:30 - INFO - trainer.trainer_stage_inr -   ep:31, train     , loss_total: 41.8539, mse: 0.0000, psnr: 0.0000, onsurface_loss: 15.3930, spatial_loss: 0.0000, grad_loss: 15.5625, normal_loss: 9.7436, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 34.6440, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e-04
+12/28/2023 20:32:30 - INFO - trainer.trainer_stage_inr -   ep:31, valid     , loss_total: 19.1111, mse: 0.0000, psnr: 0.0000, onsurface_loss: 6.7233, spatial_loss: 0.0000, grad_loss: 7.4234, normal_loss: 4.4254, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 16.1695, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e-04
+12/28/2023 20:32:32 - INFO - trainer.trainer_stage_inr -   ep:32, train     , loss_total: 36.6553, mse: 0.0000, psnr: 0.0000, onsurface_loss: 11.5186, spatial_loss: 0.0000, grad_loss: 15.1551, normal_loss: 8.9777, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 30.1180, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e-04
+12/28/2023 20:32:32 - INFO - trainer.trainer_stage_inr -   ep:32, valid     , loss_total: 17.0505, mse: 0.0000, psnr: 0.0000, onsurface_loss: 4.9890, spatial_loss: 0.0000, grad_loss: 7.4536, normal_loss: 4.0800, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 15.8380, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e-04
+12/28/2023 20:32:34 - INFO - trainer.trainer_stage_inr -   ep:33, train     , loss_total: 34.6701, mse: 0.0000, psnr: 0.0000, onsurface_loss: 10.4389, spatial_loss: 0.0000, grad_loss: 14.8042, normal_loss: 8.4519, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 29.2542, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e-04
+12/28/2023 20:32:34 - INFO - trainer.trainer_stage_inr -   ep:33, valid     , loss_total: 15.3818, mse: 0.0000, psnr: 0.0000, onsurface_loss: 3.7851, spatial_loss: 0.0000, grad_loss: 7.2781, normal_loss: 3.8292, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 14.6841, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e-04
+12/28/2023 20:32:36 - INFO - trainer.trainer_stage_inr -   ep:34, train     , loss_total: 33.4669, mse: 0.0000, psnr: 0.0000, onsurface_loss: 9.5911, spatial_loss: 0.0000, grad_loss: 14.7289, normal_loss: 8.1905, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 28.6932, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e-04
+12/28/2023 20:32:36 - INFO - trainer.trainer_stage_inr -   ep:34, valid     , loss_total: 14.5316, mse: 0.0000, psnr: 0.0000, onsurface_loss: 3.6540, spatial_loss: 0.0000, grad_loss: 7.0692, normal_loss: 3.3811, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 12.8181, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e-04
+12/28/2023 20:32:38 - INFO - trainer.trainer_stage_inr -   ep:35, train     , loss_total: 33.0857, mse: 0.0000, psnr: 0.0000, onsurface_loss: 9.6298, spatial_loss: 0.0000, grad_loss: 14.4704, normal_loss: 8.0663, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 27.5749, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e-04
+12/28/2023 20:32:38 - INFO - trainer.trainer_stage_inr -   ep:35, valid     , loss_total: 15.7297, mse: 0.0000, psnr: 0.0000, onsurface_loss: 4.4215, spatial_loss: 0.0000, grad_loss: 7.0372, normal_loss: 3.8094, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 13.8459, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e-04
+12/28/2023 20:32:41 - INFO - trainer.trainer_stage_inr -   ep:36, train     , loss_total: 32.4698, mse: 0.0000, psnr: 0.0000, onsurface_loss: 9.2853, spatial_loss: 0.0000, grad_loss: 14.3400, normal_loss: 7.9811, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 25.9030, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e-04
+12/28/2023 20:32:41 - INFO - trainer.trainer_stage_inr -   ep:36, valid     , loss_total: 15.0701, mse: 0.0000, psnr: 0.0000, onsurface_loss: 4.0775, spatial_loss: 0.0000, grad_loss: 6.9824, normal_loss: 3.6265, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 11.5092, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e-04
+12/28/2023 20:32:43 - INFO - trainer.trainer_stage_inr -   ep:37, train     , loss_total: 33.9884, mse: 0.0000, psnr: 0.0000, onsurface_loss: 10.6109, spatial_loss: 0.0000, grad_loss: 14.2745, normal_loss: 8.2405, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 25.8756, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e-04
+12/28/2023 20:32:43 - INFO - trainer.trainer_stage_inr -   ep:37, valid     , loss_total: 17.5671, mse: 0.0000, psnr: 0.0000, onsurface_loss: 5.7098, spatial_loss: 0.0000, grad_loss: 7.1064, normal_loss: 4.2518, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 14.9717, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e-04
+12/28/2023 20:32:46 - INFO - trainer.trainer_stage_inr -   ep:38, train     , loss_total: 33.7310, mse: 0.0000, psnr: 0.0000, onsurface_loss: 9.9691, spatial_loss: 0.0000, grad_loss: 14.5001, normal_loss: 8.4294, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 24.9717, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e-04
+12/28/2023 20:32:46 - INFO - trainer.trainer_stage_inr -   ep:38, valid     , loss_total: 14.8848, mse: 0.0000, psnr: 0.0000, onsurface_loss: 3.8910, spatial_loss: 0.0000, grad_loss: 7.0032, normal_loss: 3.6310, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 10.7877, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e-04
+12/28/2023 20:32:48 - INFO - trainer.trainer_stage_inr -   ep:39, train     , loss_total: 33.3764, mse: 0.0000, psnr: 0.0000, onsurface_loss: 9.8612, spatial_loss: 0.0000, grad_loss: 14.3002, normal_loss: 8.4012, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 24.4161, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e-04
+12/28/2023 20:32:48 - INFO - trainer.trainer_stage_inr -   ep:39, valid     , loss_total: 15.5491, mse: 0.0000, psnr: 0.0000, onsurface_loss: 4.2973, spatial_loss: 0.0000, grad_loss: 6.8886, normal_loss: 3.9354, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 12.8343, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e-04
+12/28/2023 20:32:50 - INFO - trainer.trainer_stage_inr -   ep:40, train     , loss_total: 33.3577, mse: 0.0000, psnr: 0.0000, onsurface_loss: 10.0288, spatial_loss: 0.0000, grad_loss: 14.2864, normal_loss: 8.1906, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 25.5576, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e-04
+12/28/2023 20:32:50 - INFO - trainer.trainer_stage_inr -   ep:40, valid     , loss_total: 15.1414, mse: 0.0000, psnr: 0.0000, onsurface_loss: 4.2349, spatial_loss: 0.0000, grad_loss: 7.0115, normal_loss: 3.4557, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 13.1808, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e-04
+12/28/2023 20:32:52 - INFO - trainer.trainer_stage_inr -   ep:41, train     , loss_total: 32.0852, mse: 0.0000, psnr: 0.0000, onsurface_loss: 9.3177, spatial_loss: 0.0000, grad_loss: 14.2152, normal_loss: 7.7973, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 22.6489, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e-04
+12/28/2023 20:32:52 - INFO - trainer.trainer_stage_inr -   ep:41, valid     , loss_total: 14.4488, mse: 0.0000, psnr: 0.0000, onsurface_loss: 3.6221, spatial_loss: 0.0000, grad_loss: 6.8304, normal_loss: 3.5287, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 14.0284, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e-04
+12/28/2023 20:32:54 - INFO - trainer.trainer_stage_inr -   ep:42, train     , loss_total: 32.1108, mse: 0.0000, psnr: 0.0000, onsurface_loss: 9.4462, spatial_loss: 0.0000, grad_loss: 14.0199, normal_loss: 7.8580, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 23.6016, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e-04
+12/28/2023 20:32:54 - INFO - trainer.trainer_stage_inr -   ep:42, valid     , loss_total: 13.9749, mse: 0.0000, psnr: 0.0000, onsurface_loss: 3.4329, spatial_loss: 0.0000, grad_loss: 6.7756, normal_loss: 3.4002, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 10.9864, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e-04
+12/28/2023 20:32:55 - INFO - trainer.trainer_stage_inr -   ep:43, train     , loss_total: 31.5200, mse: 0.0000, psnr: 0.0000, onsurface_loss: 9.1726, spatial_loss: 0.0000, grad_loss: 13.8993, normal_loss: 7.6410, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 24.2139, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e-04
+12/28/2023 20:32:55 - INFO - trainer.trainer_stage_inr -   ep:43, valid     , loss_total: 15.1336, mse: 0.0000, psnr: 0.0000, onsurface_loss: 4.1811, spatial_loss: 0.0000, grad_loss: 6.8087, normal_loss: 3.7751, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 11.0603, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e-04
+12/28/2023 20:32:57 - INFO - trainer.trainer_stage_inr -   ep:44, train     , loss_total: 31.1749, mse: 0.0000, psnr: 0.0000, onsurface_loss: 9.0852, spatial_loss: 0.0000, grad_loss: 13.7572, normal_loss: 7.5630, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 23.0851, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e-04
+12/28/2023 20:32:57 - INFO - trainer.trainer_stage_inr -   ep:44, valid     , loss_total: 14.2288, mse: 0.0000, psnr: 0.0000, onsurface_loss: 3.7015, spatial_loss: 0.0000, grad_loss: 6.6757, normal_loss: 3.4314, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 12.6069, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e-04
+12/28/2023 20:32:59 - INFO - trainer.trainer_stage_inr -   ep:45, train     , loss_total: 31.2199, mse: 0.0000, psnr: 0.0000, onsurface_loss: 9.3005, spatial_loss: 0.0000, grad_loss: 13.7039, normal_loss: 7.4393, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 23.2867, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e-04
+12/28/2023 20:32:59 - INFO - trainer.trainer_stage_inr -   ep:45, valid     , loss_total: 15.0924, mse: 0.0000, psnr: 0.0000, onsurface_loss: 4.5029, spatial_loss: 0.0000, grad_loss: 6.7239, normal_loss: 3.4685, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 11.9146, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e-04
+12/28/2023 20:33:01 - INFO - trainer.trainer_stage_inr -   ep:46, train     , loss_total: 31.2440, mse: 0.0000, psnr: 0.0000, onsurface_loss: 9.5826, spatial_loss: 0.0000, grad_loss: 13.5595, normal_loss: 7.3549, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 22.4123, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e-04
+12/28/2023 20:33:01 - INFO - trainer.trainer_stage_inr -   ep:46, valid     , loss_total: 15.7350, mse: 0.0000, psnr: 0.0000, onsurface_loss: 5.3386, spatial_loss: 0.0000, grad_loss: 6.6779, normal_loss: 3.2505, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 14.0404, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e-04
+12/28/2023 20:33:03 - INFO - trainer.trainer_stage_inr -   ep:47, train     , loss_total: 31.7755, mse: 0.0000, psnr: 0.0000, onsurface_loss: 9.7145, spatial_loss: 0.0000, grad_loss: 13.6689, normal_loss: 7.6679, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 21.7252, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e-04
+12/28/2023 20:33:03 - INFO - trainer.trainer_stage_inr -   ep:47, valid     , loss_total: 14.1032, mse: 0.0000, psnr: 0.0000, onsurface_loss: 3.6665, spatial_loss: 0.0000, grad_loss: 6.7336, normal_loss: 3.3421, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 10.8274, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e-04
+12/28/2023 20:33:05 - INFO - trainer.trainer_stage_inr -   ep:48, train     , loss_total: 29.8169, mse: 0.0000, psnr: 0.0000, onsurface_loss: 8.3897, spatial_loss: 0.0000, grad_loss: 13.5336, normal_loss: 7.1677, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 21.7795, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e-04
+12/28/2023 20:33:05 - INFO - trainer.trainer_stage_inr -   ep:48, valid     , loss_total: 13.7903, mse: 0.0000, psnr: 0.0000, onsurface_loss: 3.8403, spatial_loss: 0.0000, grad_loss: 6.5998, normal_loss: 3.0011, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 10.4746, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e-04
+12/28/2023 20:33:07 - INFO - trainer.trainer_stage_inr -   ep:49, train     , loss_total: 29.6720, mse: 0.0000, psnr: 0.0000, onsurface_loss: 8.5562, spatial_loss: 0.0000, grad_loss: 13.3611, normal_loss: 6.9981, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 22.6983, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e-04
+12/28/2023 20:33:07 - INFO - trainer.trainer_stage_inr -   ep:49, valid     , loss_total: 13.4805, mse: 0.0000, psnr: 0.0000, onsurface_loss: 3.5739, spatial_loss: 0.0000, grad_loss: 6.3783, normal_loss: 3.1552, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 11.1922, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e-04
+12/28/2023 20:33:09 - INFO - trainer.trainer_stage_inr -   ep:50, train     , loss_total: 29.2061, mse: 0.0000, psnr: 0.0000, onsurface_loss: 8.3905, spatial_loss: 0.0000, grad_loss: 13.2674, normal_loss: 6.8263, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 21.6586, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e-04
+12/28/2023 20:33:09 - INFO - trainer.trainer_stage_inr -   ep:50, valid     , loss_total: 14.0029, mse: 0.0000, psnr: 0.0000, onsurface_loss: 3.3183, spatial_loss: 0.0000, grad_loss: 6.6069, normal_loss: 3.7045, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 11.1980, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e-04
+12/28/2023 20:33:11 - INFO - trainer.trainer_stage_inr -   ep:51, train     , loss_total: 29.3035, mse: 0.0000, psnr: 0.0000, onsurface_loss: 8.1537, spatial_loss: 0.0000, grad_loss: 13.3611, normal_loss: 7.0663, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 21.6720, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e-04
+12/28/2023 20:33:11 - INFO - trainer.trainer_stage_inr -   ep:51, valid     , loss_total: 13.6052, mse: 0.0000, psnr: 0.0000, onsurface_loss: 3.3777, spatial_loss: 0.0000, grad_loss: 6.5026, normal_loss: 3.3844, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 10.2148, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e-04
+12/28/2023 20:33:13 - INFO - trainer.trainer_stage_inr -   ep:52, train     , loss_total: 29.4910, mse: 0.0000, psnr: 0.0000, onsurface_loss: 8.1819, spatial_loss: 0.0000, grad_loss: 13.3790, normal_loss: 7.1689, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 22.8335, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e-04
+12/28/2023 20:33:13 - INFO - trainer.trainer_stage_inr -   ep:52, valid     , loss_total: 12.9068, mse: 0.0000, psnr: 0.0000, onsurface_loss: 3.0931, spatial_loss: 0.0000, grad_loss: 6.4220, normal_loss: 3.1025, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 8.6771, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e-04
+12/28/2023 20:33:15 - INFO - trainer.trainer_stage_inr -   ep:53, train     , loss_total: 28.6132, mse: 0.0000, psnr: 0.0000, onsurface_loss: 7.9223, spatial_loss: 0.0000, grad_loss: 13.1319, normal_loss: 6.8466, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 21.3721, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e-04
+12/28/2023 20:33:15 - INFO - trainer.trainer_stage_inr -   ep:53, valid     , loss_total: 13.2446, mse: 0.0000, psnr: 0.0000, onsurface_loss: 3.3163, spatial_loss: 0.0000, grad_loss: 6.3503, normal_loss: 3.2126, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 10.9614, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e-04
+12/28/2023 20:33:17 - INFO - trainer.trainer_stage_inr -   ep:54, train     , loss_total: 28.6205, mse: 0.0000, psnr: 0.0000, onsurface_loss: 7.8602, spatial_loss: 0.0000, grad_loss: 13.1744, normal_loss: 6.8925, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 20.8033, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e-04
+12/28/2023 20:33:17 - INFO - trainer.trainer_stage_inr -   ep:54, valid     , loss_total: 13.4516, mse: 0.0000, psnr: 0.0000, onsurface_loss: 3.6652, spatial_loss: 0.0000, grad_loss: 6.2967, normal_loss: 3.1689, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 9.6243, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e-04
+12/28/2023 20:33:19 - INFO - trainer.trainer_stage_inr -   ep:55, train     , loss_total: 29.0197, mse: 0.0000, psnr: 0.0000, onsurface_loss: 8.3422, spatial_loss: 0.0000, grad_loss: 13.1076, normal_loss: 6.8654, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 21.1345, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e-04
+12/28/2023 20:33:19 - INFO - trainer.trainer_stage_inr -   ep:55, valid     , loss_total: 13.9587, mse: 0.0000, psnr: 0.0000, onsurface_loss: 4.1316, spatial_loss: 0.0000, grad_loss: 6.3051, normal_loss: 3.1211, div_loss: 0.0000, bce_loss: 0.0000, off_surface_loss: 12.0303, pred_max: 0.0000, pred_min: 0.0000, weight_norm: 0.0000, grad_norm_mean: 0.0000, lr: 1.000000e-04

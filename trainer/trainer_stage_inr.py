@@ -165,7 +165,18 @@ class Trainer(TrainerTemplate):
             loss = model.compute_loss(outputs, xs, type=self.config.dataset.supervision, coords=coord_inputs,
                                       mode='mean')
 
-            metrics = dict(loss_total=loss["loss_total"], mse=loss["mse"], psnr=loss["psnr"])
+            metrics = dict(
+                loss_total=loss["loss_total"],
+                onsurface_loss=loss["onsurface_loss"],
+                spatial_loss=loss["spatial_loss"],
+                grad_loss=loss["grad_loss"],
+                normal_loss=loss["normal_loss"],
+
+                div_loss=loss["div_loss"],
+                bce_loss=loss["bce_loss"],
+                off_surface_loss=loss["off_surface_loss"],
+
+            )
             accm.update(metrics, count=coord_inputs.shape[0], sync=True, distenv=self.distenv)
 
             if self.distenv.master:
@@ -229,6 +240,11 @@ class Trainer(TrainerTemplate):
                                       mode='mean')
 
             loss["loss_total"].backward()
+            # Print gradient norms for each parameter
+            for name, param in model.named_parameters():
+                if param.grad is not None:
+                    print(f'Gradient norm for {name}: {param.grad.abs().mean().item()}')
+
             if self.config.optimizer.max_gn is not None:
                 torch.nn.utils.clip_grad_norm_(model.parameters(), self.config.optimizer.max_gn)
 
@@ -241,7 +257,18 @@ class Trainer(TrainerTemplate):
             else:
                 scheduler.step(epoch)
 
-            metrics = dict(loss_total=loss["loss_total"], mse=loss["mse"], psnr=loss["psnr"])
+            metrics = dict(
+                loss_total=loss["loss_total"],
+                onsurface_loss=loss["onsurface_loss"],
+                spatial_loss=loss["spatial_loss"],
+                grad_loss=loss["grad_loss"],
+                normal_loss=loss["normal_loss"],
+
+                div_loss=loss["div_loss"],
+                bce_loss=loss["bce_loss"],
+                off_surface_loss=loss["off_surface_loss"],
+
+            )
             accm.update(metrics, count=1)
             total_step += 1
 

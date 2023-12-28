@@ -1,0 +1,118 @@
+arch:
+  type: meta_low_rank_modulated_inr
+  ema: null
+  n_inner_step: 5
+  inner_lr: 0.003
+  hyponet:
+    type: mlp
+    n_layer: 6
+    hidden_dim:
+    - 256
+    use_bias: true
+    share_bias: false
+    input_dim: 3
+    output_dim: 2
+    output_bias: 0.5
+    fourier_mapping:
+      type: siren
+      trainable: false
+      use_ff: false
+      ff_sigma: 0
+      ff_dim: 3
+    activation:
+      type: siren
+      siren_w0: 30.0
+    initialization:
+      weight_init_type: siren
+      bias_init_type: siren
+    normalize_weight: true
+  rank:
+  - 128
+  modulated_layer_idxs:
+  - 0
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  use_factorization: false
+  coord_sampler:
+    data_type: image
+    coord_range:
+    - -1.0
+    - 1.0
+    train_strategy: null
+    val_strategy: null
+dataset:
+  transforms:
+    type: shapenet
+  type: shapenet
+  supervision: siren_sdf
+  folder: /home/umaru/PycharmProjects/meta_shaope/data/171shape_resize/train/1b0b1d2cb9f9d5c0575bd26acccafabd.obj.npy
+optimizer:
+  type: overfit
+  max_gn: null
+  warmup:
+    mode: adaptive
+    start_from_zero: true
+    epoch: 0
+    multiplier: 1
+    buffer_epoch: 0
+    min_lr: 0.0001
+    step_size: 750
+    gamma: 0.5
+    patience: 30
+    patience_adaptive: 30
+    factor: 0.5
+    threshold: 0
+  init_lr: 0.0001
+  weight_decay: 0.0
+  betas:
+  - 0.9
+  - 0.95
+  grad_accm_steps: 1
+experiment:
+  test_freq: 30
+  amp: true
+  batch_size: 10
+  total_batch_size: 10
+  epochs: 20000
+  epochs_cos: 30
+  save_ckpt_freq: 2000
+  test_imlog_freq: 100
+loss:
+  type: mse
+  subsample:
+    type: null
+    ratio: 0.1
+  coord_noise: null
+type: overfit
+trainer: stage_inr
+seed: 0
+runtime:
+  args:
+    model_config: /home/umaru/praktikum/changed_version/2023_visionpractical/config/shapenet_meta_sdf_overfit.yaml
+    result_path: /home/umaru/praktikum/changed_version/2023_visionpractical/exp_week9_meta_transinr
+    task: test_gen_trans_test_3
+    load_path: ''
+    postfix: ''
+    seed: 0
+    eval: false
+    resume: false
+    world_size: 1
+    local_rank: 0
+    node_rank: 0
+    nnodes: 1
+    nproc_per_node: 1
+    dist_backend: nccl
+    timeout: 1
+    rank: 0
+  extra_config: {}
+  distenv:
+    world_size: 1
+    world_rank: 0
+    local_rank: 0
+    num_gpus: 1
+    master: true
+    device_name: NVIDIA GeForce RTX 3060 Laptop GPU
+result_path: /home/umaru/praktikum/changed_version/2023_visionpractical/exp_week9_meta_transinr/shapenet_meta_sdf_overfit/test_gen_trans_test_3
