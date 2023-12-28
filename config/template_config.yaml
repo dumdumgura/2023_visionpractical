@@ -1,4 +1,4 @@
-type: generalize
+type: {value: overfit, type: string} #generalize/overfit
 trainer: stage_inr
 dataset:
   type: {value: shapenet, type: string}
@@ -80,6 +80,6 @@ experiment:
   total_batch_size: {value: 2, type: integer}
   epochs: {value: 10000, type: integer}
   epochs_cos: {value: 30, type: integer}
-  save_ckpt_freq: {value: 20, type: integer}
-  test_freq: {value: 1, type: integer}
-  test_imlog_freq: {value: 200, type: integer}
+  save_ckpt_freq: {value: 200, type: integer}
+  test_freq: {value: 250, type: integer}
+  test_imlog_freq: {value: 500, type: integer}

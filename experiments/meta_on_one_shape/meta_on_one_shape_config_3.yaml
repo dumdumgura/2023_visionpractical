@@ -12,8 +12,7 @@ arch:
   rank:
   - 128
   modulated_layer_idxs:
-  - 1
-  - 3
+  - 2
   use_factorization: false
   n_inner_step: 4
   inner_lr: 0.003
@@ -79,6 +78,6 @@ experiment:
   total_batch_size: 2
   epochs: 10000
   epochs_cos: 30
-  save_ckpt_freq: 20
-  test_freq: 1
-  test_imlog_freq: 200
+  save_ckpt_freq: 200
+  test_freq: 250
+  test_imlog_freq: 500

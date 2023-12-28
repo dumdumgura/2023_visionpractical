@@ -155,7 +155,8 @@ def create_meshes(
     if overfit:
         batch = 1
     else:
-        batch = modulation_params_dict['linear_wb1'].shape[0]
+        batch = modulation_params_dict[list(modulation_params_dict.keys())[0]].shape[0]
+        #batch = modulation_params_dict['linear_wb1'].shape[0]
 
     start = time.time()
     ply_filename = filename

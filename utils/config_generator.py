@@ -48,7 +48,10 @@ def input_value(prompt, value_type):
         
 def generate_combinations(experiment_data):
     keys = experiment_data.keys()
-    values_product = itertools.product(*(experiment_data[key] for key in keys))
+    # Wrap non-iterable values in a list
+    values_product = itertools.product(
+        *([v] if not isinstance(v, list) else v for v in experiment_data.values())
+    )
     return keys, values_product
 
 def convert_to_values(d):
@@ -57,6 +60,18 @@ def convert_to_values(d):
             d[key] = value['value']
         elif isinstance(value, dict):
             convert_to_values(value)
+            
+def update_config(config, key, value):
+    key_parts = key.split('.')
+    sub_config = config
+    for part in key_parts[:-1]:
+        if part not in sub_config:
+            sub_config[part] = {}
+        sub_config = sub_config[part]
+    if isinstance(sub_config.get(key_parts[-1], None), dict):
+        sub_config[key_parts[-1]]['value'] = value
+    else:
+        sub_config[key_parts[-1]] = {'value': value, 'type': 'string'}  # default type can be adjusted
 
 def main():
     if len(sys.argv) != 3:
@@ -98,12 +113,17 @@ def main():
         #experiment_file = input("Enter the path to the experiment file: ")
         experiment_file = "./config/experiment_generator.yaml"
         experiments = ordered_load(open(experiment_file, 'r'))
+        
+        # Path for the parent "experiments" directory
+        experiments_dir = os.path.join(os.getcwd(), 'experiments')
+        os.makedirs(experiments_dir, exist_ok=True)
+        
         for experiment in experiments:
             experiment_name = experiment['experiment_name']
             experiment_data = {k: v for k, v in experiment.items() if k != 'experiment_name'}
             
             # Create a directory for the experiment
-            experiment_dir = os.path.join(os.getcwd(), experiment_name)
+            experiment_dir = os.path.join(experiments_dir, experiment_name)
             os.makedirs(experiment_dir, exist_ok=True)
             
             keys, combinations = generate_combinations(experiment_data)
@@ -112,7 +132,9 @@ def main():
             for combo in combinations:
                 config = ordered_load(open(template_file, 'r'))
                 
+                # Update config with the combination values
                 for key, value in zip(keys, combo):
+                    update_config(config, key, value)
                     # Assuming 'key' is a valid path in 'config'
                     sub_config = config
                     key_parts = key.split('.')

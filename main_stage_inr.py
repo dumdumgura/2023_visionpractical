@@ -62,7 +62,7 @@ if __name__ == "__main__":
         # Set the project where this run will be logged
         project = "ginr_simplified_2",
         # Identifier for the current run
-        #notes = config.experiment.name,
+        notes = args.task,
         # Track hyperparameters and run metadata
         config = yaml.safe_load(open(args.model_config))
     )
