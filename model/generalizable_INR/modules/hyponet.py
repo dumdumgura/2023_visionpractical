@@ -23,6 +23,7 @@ class HypoNet(nn.Module):
         self.use_ff = self.ff_config.use_ff
         self.num_layer = config.n_layer
         self.hidden_dims = config.hidden_dim
+        self.share_bias = config.share_bias
         if len(self.hidden_dims) == 1:
             self.hidden_dims = OmegaConf.to_object(self.hidden_dims) * (self.num_layer - 1)  # exclude output layer
         else:
@@ -52,6 +53,7 @@ class HypoNet(nn.Module):
             self.embedder = RBFLayer(in_features=3, out_features=self.ff_config.ff_dim)
         #in_features = kwargs.get('rbf_centers', 128)
         # after computes the shape of trainable parameters, initialize them
+
         self.params_dict = None
         self.params_shape_dict = self.compute_params_shape()
         self.activation = create_activation(self.config.activation)
@@ -194,20 +196,18 @@ class HypoNet(nn.Module):
             hidden = coord
 
 
-        for idx in range(self.config.n_layer):
-            param_key = f"linear_wb{idx}"
-            base_param = self.params_dict[param_key]
+        # test_phrase:
+        if self.config.share_bias:
+            for idx in range(self.config.n_layer):
+                param_key = f"linear_wb{idx}"
+                base_param = self.params_dict[param_key]
 
-            if (modulation_params_dict is not None) and (param_key in modulation_params_dict.keys()):
-                modulation_param = modulation_params_dict[param_key].squeeze()
+                if (modulation_params_dict is not None) and (param_key in modulation_params_dict.keys()):
+                    modulation_param = modulation_params_dict[param_key].squeeze()
 
-            else:
-                if self.config.use_bias:
-                    modulation_param = torch.ones_like(base_param[:-1, :])
                 else:
-                    modulation_param = torch.ones_like(base_param)
+                    modulation_param = torch.ones_like(base_param[:-1, :])
 
-            if self.config.use_bias:
                 ones = torch.ones(*hidden.shape[:-1], 1, device=hidden.device)
                 hidden = torch.cat([hidden, ones], dim=-1)
 
@@ -228,20 +228,39 @@ class HypoNet(nn.Module):
 
                 modulated_param = torch.cat([param_w, base_param_b], dim=0)
 
-            else:
+                hidden = torch.matmul(hidden,  modulated_param)
+
+
+                if idx < (self.config.n_layer - 1):
+                    hidden = self.activation(hidden)
+        else:
+
+            #not sharing bias
+            for idx in range(self.config.n_layer):
+                param_key = f"linear_wb{idx}"
+                base_param = self.params_dict[param_key]
+
+                if (modulation_params_dict is not None) and (param_key in modulation_params_dict.keys()):
+                    modulation_param = modulation_params_dict[param_key].squeeze()
+
+                else:
+                    modulation_param = torch.ones_like(base_param)
+
+
                 if self.ignore_base_param_dict[param_key]:
                     base_param = 1.
 
-                if self.normalize_weight:
+
+                if self.normalize_weight and self.ff_config.type != 'siren':
                     modulated_param = F.normalize(base_param * modulation_param, dim=0)
                 else:
-                    modulated_param = base_param*modulation_param
-
-            hidden = torch.matmul(hidden,  modulated_param)
+                    modulated_param = base_param * modulation_param
 
 
-            if idx < (self.config.n_layer - 1):
-                hidden = self.activation(hidden)
+                hidden = torch.matmul(hidden, modulated_param[:-1,:])+modulated_param[-1,:]
+
+                if idx < (self.config.n_layer - 1):
+                    hidden = self.activation(hidden)
 
         outputs = hidden + self.output_bias
         outputs = outputs.view(batch_size, *coord_shape, -1)
@@ -287,16 +306,21 @@ class HypoNet(nn.Module):
                 modulation_param = modulation_params_dict[param_key]
 
             else:
-                if self.config.use_bias:
+                if self.config.use_bias and self.config.share_bias:
                     modulation_param = torch.ones_like(base_param[:, :-1])
                 else:
                     modulation_param = torch.ones_like(base_param)
 
-            if self.config.use_bias:
+
+            if self.config.share_bias:
+
                 ones = torch.ones(*hidden.shape[:-1], 1, device=hidden.device)
                 hidden = torch.cat([hidden, ones], dim=-1)
 
                 base_param_w, base_param_b = base_param[:, :-1, :], base_param[:, -1:, :]
+
+                # construct residual learning
+
                 #if self.normalize_weight:
                 #    base_param_w = F.normalize(base_param_w, dim=0)
 
@@ -321,22 +345,24 @@ class HypoNet(nn.Module):
 
                 modulated_param = torch.cat([param_w, base_param_b], dim=1)
 
-            else:
+
+                hidden = torch.bmm(hidden, modulated_param)
+
+            else: # not sharing bias:
 
                 if self.ignore_base_param_dict[param_key]:
                     base_param = 1.
-                    #print("modulated_layer" + str(idx) + ": " + str(modulation_param.norm()))
+                    # print("modulated_layer" + str(idx) + ": " + str(modulation_param.norm()))
                 else:
-                    #print("base_layer" + str(idx) + ": " + str(base_param_w.norm()))
+                    # print("base_layer" + str(idx) + ": " + str(base_param_w.norm()))
                     pass
 
-
-                if self.normalize_weight:
+                if self.normalize_weight and self.ff_config.type != 'siren':
                     modulated_param = F.normalize(base_param * modulation_param, dim=1)
                 else:
                     modulated_param = base_param * modulation_param
 
-            hidden = torch.bmm(hidden, modulated_param)
+                hidden = torch.bmm(hidden, modulated_param[:,:-1,:])+ modulated_param[:,-1,:][:,None,:]
             #print(modulated_param.norm())
 
 

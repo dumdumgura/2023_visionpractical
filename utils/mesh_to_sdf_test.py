@@ -42,19 +42,19 @@ output_folder=args.output_folder
 #output_folder = './data'
 
 
-#filter = '/home/umaru/praktikum/changed_version/ginr-ipc/data/shapenet/shape_filter_small.txt'
+filter = '/home/umaru/praktikum/changed_version/ginr-ipc/data/shapenet/shape_filter_small.txt'
 
 files = []
-#filter_list = []
+filter_list = []
 
-#with open(filter, "r") as text:
-    #for line in text:
-    #    file_name = line.strip()
-    #    filter_list.append(file_name)
+with open(filter, "r") as text:
+    for line in text:
+        file_name = line.strip()
+        filter_list.append(file_name)
 
 for file in os.listdir(input_folder):
-    #if file in filter_list:
-    files.append(file)
+    if file in filter_list:
+        files.append(file)
 
 i=0
 
@@ -66,7 +66,7 @@ for file in files:
     mesh = trimesh.load(os.path.join(input_folder,file))
 
     if mode == 'sdf' or mode =='occ':
-        points, sdf, grads = sample_sdf_near_surface(mesh, number_of_points=300000,sign_method='depth',return_gradients=True)#1000w
+        points, sdf, grads = sample_sdf_near_surface(mesh, number_of_points=20000,sign_method='depth',return_gradients=True)#1000w
         point_cloud = np.concatenate([points.reshape(-1, 3), sdf.reshape(-1,1),grads.reshape(-1,3)], axis=-1)
 
 
@@ -96,11 +96,11 @@ for file in files:
     else:
         print("wrong mode")
     # for visualization    
-
-    #colors = np.zeros(points.shape)
-    #colors[sdf < 0.00, 2] = 1
-    #colors[sdf > 0.00, 0] = 1
-    cloud = pyrender.Mesh.from_points(points)
+    '''
+    colors = np.zeros(points.shape)
+    colors[sdf < 0.00, 2] = 1
+    colors[sdf > 0.00, 0] = 1
+    cloud = pyrender.Mesh.from_points(points,colors)
     scene = pyrender.Scene()
     scene.add(cloud)
 
@@ -121,5 +121,5 @@ for file in files:
     #scene.add_node(node)
     #scene.add(node)
     viewer = pyrender.Viewer(scene, use_raymond_lighting=True, point_size=3)
+    '''
 
-    break

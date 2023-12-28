@@ -15,8 +15,8 @@ def create_inr_optimizer(model, config):
             model.parameters(), lr=config.init_lr, weight_decay=config.weight_decay, momentum=0.9
         )
     elif optimizer_type =='overfit':
-        optimizer = torch.optim.SGD(
-            model.factors.init_modulation_factors.parameters(), lr=config.init_lr, weight_decay=config.weight_decay, momentum=0.9
+        optimizer = torch.optim.Adam(
+            model.factors.init_modulation_factors.parameters(),lr=config.init_lr, weight_decay=config.weight_decay, betas=config.betas
         )
     elif optimizer_type =='overfit_hyper':
         optimizer = torch.optim.SGD(

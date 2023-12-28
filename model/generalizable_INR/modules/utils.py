@@ -13,7 +13,7 @@ def convert_int_to_list(size, len_list=2):
         return size
 
 
-def initialize_params(params, init_type, **kwargs):
+def initialize_params(params, init_type, type,**kwargs):
     fan_in, fan_out = params.shape[0], params.shape[1]
     if init_type is None or init_type == "normal":
         nn.init.normal_(params)
@@ -27,19 +27,39 @@ def initialize_params(params, init_type, **kwargs):
 
     elif "siren" == init_type:
         assert "siren_w0" in kwargs.keys() and "is_first" in kwargs.keys()
-        w0 = kwargs["siren_w0"]
+        if type == 'weight':
+            w0 = kwargs["siren_w0"]
 
-        if kwargs["is_first"]:
-            w_std = 1 / fan_in
-        else:
-            w_std = math.sqrt(6.0 / fan_in) / w0
+            if kwargs["is_first"]:
+                w_std = 1 / fan_in
+            else:
+                w_std = math.sqrt(6.0 / fan_in) / w0
+
+            nn.init.uniform_(params, -w_std, w_std)
+
+
+
+        elif type == 'bias':
+            w0 = kwargs["siren_w0"]
+
+            if kwargs["is_first"]:
+                w_std = math.sqrt(1 / 3)
+            else:
+                w_std = math.sqrt(1.0 / 256)
+
+            nn.init.uniform_(params, -w_std, w_std)
+
             print("-baselayer-")
             print(w_std)
             print(fan_in)
             print(fan_out)
             print("---")
-        nn.init.uniform_(params, -w_std, w_std)
-        print(params.norm())
+            print(params.min())
+            print(params.max())
+            print(params.mean())
+            print(params.var())
+            #print(params.norm())
+
     else:
         raise NotImplementedError
 
@@ -54,8 +74,8 @@ def create_params_with_init(shape, init_type="normal", include_bias=False, bias_
         params = torch.empty([shape[0] - 1, shape[1]])
         bias = torch.empty([1, shape[1]])
 
-        initialize_params(params, init_type, **kwargs)
-        initialize_params(bias, bias_init_type, **kwargs)
+        initialize_params(params, init_type, 'weight', **kwargs)
+        initialize_params(bias, bias_init_type, 'bias', **kwargs)
         return torch.cat([params, bias], dim=0)
 
 
