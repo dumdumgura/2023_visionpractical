@@ -84,7 +84,7 @@ class TrainerTemplate:
 
     def run_epoch(self, optimizer=None, scheduler=None, epoch_st=0):
         scaler = self.scaler
-
+        prev_loss = None
         for i in range(epoch_st, self.config.experiment.epochs):
             torch.cuda.empty_cache()
             print("start_training")
@@ -108,14 +108,30 @@ class TrainerTemplate:
                     if i == 0 or (i + 1) % self.config.experiment.test_freq == 0:
                         self.logging(summary_val, scheduler=scheduler, epoch=i + 1, mode="valid")
                         self.run.log({"val/metrics": summary_val.metrics}, step = i)
-
+                #if overfit
+                #else:
+                """                     
+                if i == 0 or (i + 1) % self.config.experiment.test_freq == 0:
+                summary_val = self.eval(epoch=i)
+                self.logging(summary_val, scheduler=scheduler, epoch=i + 1, mode="valid")
+                self.run.log({"val/metrics": summary_val.metrics}, step = i)
+                """
+                
                 # save ckpt
                 if (i + 1) % self.config.experiment.save_ckpt_freq == 0:
                     self.save_ckpt(optimizer, scheduler, i + 1)
 
+                if self.config.optimizer.use_patience:
+                    if prev_loss != None and \
+                        abs(prev_loss -  summary_trn["loss_total"]) < self.config.optimizer.patience_treshold:
+                        print(f"Stopping due to patience at epoch={i} w/ prev_loss={prev_loss.item()} and loss_total={summary_trn['loss_total'].item()}")
+                        self.save_ckpt(optimizer, scheduler, i + 1)
+                        break
+                    prev_loss = summary_trn["loss_total"]
 
     def save_ckpt(self, optimizer, scheduler, epoch):
-        ckpt_path = os.path.join(self.config.result_path, "epoch%d_model.pt" % epoch)
+        obj_name = str(self.config.dataset.folder).split(".")[-3].split("/")[-1]
+        ckpt_path = os.path.join(self.config.result_path, obj_name, "epoch%d_model.pt" % epoch)
         logger.info("epoch: %d, saving %s", epoch, ckpt_path)
         ckpt = {
             "epoch": epoch,
@@ -123,4 +139,6 @@ class TrainerTemplate:
             "optimizer": optimizer.state_dict(),
             "scheduler": scheduler.state_dict(),
         }
+        # Create the directory if it doesn't exist
+        os.makedirs(os.path.dirname(ckpt_path), exist_ok=True)
         torch.save(ckpt, ckpt_path)

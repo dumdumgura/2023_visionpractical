@@ -7,6 +7,6 @@ exp_week9
 exp_week9_meta_bias
 exp_week9_overfit
 data
-
+ckpts/results
 .vscode/
 wandb/

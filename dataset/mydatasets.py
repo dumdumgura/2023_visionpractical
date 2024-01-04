@@ -11,12 +11,14 @@ class ShapeNet(Dataset):
         self,
         dataset_folder,
         split,
-        type
+        type,
+        clipping_treshold = 0.1
     ):
         self.split = split
         self.data_source = os.path.join(dataset_folder,split)
         #self.filter = os.path.join(dataset_folder,'shape_filter_small.txt')
         self.batch = 5000
+        self.clipping_treshold = clipping_treshold
         self.type = type
         files = []
         filter_list=[]
@@ -41,7 +43,7 @@ class ShapeNet(Dataset):
             self.coords = point_cloud[:, :3]
             #self.occupancies = point_cloud[:, 3].reshape(-1, 1)
             self.sdf = point_cloud[:, 3].reshape(-1, 1)
-            self.sdf = np.clip(self.sdf, -0.1, 0.1)
+            self.sdf = np.clip(self.sdf, -self.clipping_treshold, self.clipping_treshold)
             #self.labels = point_cloud[:, 5].reshape(-1, 1)
             self.normals = point_cloud[:,4:7]
 
@@ -118,10 +120,12 @@ class Pointcloud(Dataset):
         self,
         pc_path,
         split,
-        type
+        type,
+        clipping_treshold = 0.1
     ):
         self.batch =5000
-
+        self.clipping_treshold = clipping_treshold
+        
         self.type = type
         if self.type =='sdf'or self.type =='occ':
             point_cloud = np.load(
@@ -130,7 +134,7 @@ class Pointcloud(Dataset):
             self.coords = point_cloud[:, :3]
             #self.occupancies = point_cloud[:, 3].reshape(-1, 1)
             self.sdf = point_cloud[:, 3].reshape(-1, 1)
-            self.sdf = np.clip(self.sdf, -0.1, 0.1)
+            self.sdf = np.clip(self.sdf, -self.clipping_treshold, self.clipping_treshold)
             #self.labels = point_cloud[:, 5].reshape(-1, 1)
             self.normals = point_cloud[:,4:7]
 

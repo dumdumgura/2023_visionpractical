@@ -179,3 +179,31 @@ def look_at(eye, target, up):
     camera_pose[:-1, 2] = forward
     camera_pose[:-1, 3] = eye
     return camera_pose
+
+def list_and_save_filenames(directory, output_file, search_extension=".obj.npy", add_extension=".obj"):
+    """
+    Lists all files in a directory with a specific extension and saves their names, with an additional extension, to a file.
+
+    :param directory: The directory to search for files.
+    :param output_file: The file where the list of filenames will be saved.
+    :param search_extension: The file extension to look for. Default is '.obj.npy'.
+    :param add_extension: The extension to add to each filename in the list. Default is '.obj'.
+    """
+
+    # List to hold the filenames without extension
+    filenames_without_extension = []
+
+    # Loop through the files in the directory
+    for filename in os.listdir(directory):
+        # Check if the file follows the specific naming convention
+        if filename.endswith(search_extension):
+            # Strip the search extension and add the new extension
+            name_without_extension = filename.rsplit('.', 2)[0] + add_extension
+            filenames_without_extension.append(name_without_extension)
+
+    # Write the list to a file
+    with open(output_file, 'w') as file:
+        for name in filenames_without_extension:
+            file.write(name + '\n')
+
+    print(f"List of filenames has been written to {output_file}")

@@ -242,7 +242,7 @@ def create_meshes(
 
 
 def convert_sdf_samples_to_ply(
-    pytorch_3d_sdf_tensor,
+    sdf_tensor,
     voxel_grid_origin,
     voxel_size,
     ply_filename_out,
@@ -265,7 +265,7 @@ def convert_sdf_samples_to_ply(
     # return
     start_time = time.time()
 
-    numpy_3d_sdf_tensor = pytorch_3d_sdf_tensor.numpy()
+    numpy_3d_sdf_tensor = sdf_tensor.numpy() if isinstance(sdf_tensor, torch.Tensor) else sdf_tensor
     # print(numpy_3d_sdf_tensor.min(), numpy_3d_sdf_tensor.max())
     verts, faces, normals, values = (
         np.zeros((0, 3)),
@@ -295,4 +295,4 @@ def convert_sdf_samples_to_ply(
         mesh_points = mesh_points - offset
 
 
-    return mesh_points, faces, pytorch_3d_sdf_tensor
+    return mesh_points, faces, sdf_tensor

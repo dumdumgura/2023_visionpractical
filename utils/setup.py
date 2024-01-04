@@ -74,7 +74,9 @@ def setup(args, extra_args=()):
         log_path = Path(args.result_path).joinpath(task_name, now)
 
     config = config_setup(args, distenv, config_path, extra_args=extra_args)
-    config.result_path = log_path.absolute().resolve().as_posix()
+    
+    if config.result_path == "":
+        config.result_path = log_path.absolute().resolve().as_posix()
 
     if distenv.master:
         if not log_path.exists():

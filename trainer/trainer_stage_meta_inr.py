@@ -266,21 +266,23 @@ class Trainer(TrainerTemplate):
 
                     vis = True
                     _, meshes, _ = model(xs, coord_inputs, is_training=False, vis=vis,type=self.config.dataset.supervision)
-                    ply_data_arr, ply_filename_out_arr = self.reconstruct_shape(meshes,epoch,mode=mode)
-                    wandb_out_imgs = []
-                    for i, mesh_i in enumerate(meshes):
-                        trimesh_mesh_i = trimesh.Trimesh(mesh_i["vertices"], mesh_i["faces"])
-                        out_img_i, _ = render_mesh(trimesh_mesh_i)
-                        caption_i = ply_filename_out_arr[i].split('/')[-1]
-                        wandb_out_imgs.append(wandb.Image(out_img_i, caption=caption_i))
-                    self.run.log(
-                        {"val/generated_renders": wandb_out_imgs}, step=epoch
-                    )
+
                 else:
                     model = self.model
                     model.eval()
                     meshes = model.overfit_one_shape(type=self.config.dataset.supervision)
-                    self.reconstruct_shape(meshes,epoch,mode=mode)
+                    #self.reconstruct_shape(meshes,epoch,mode=mode)
+                    
+                ply_data_arr, ply_filename_out_arr = self.reconstruct_shape(meshes,epoch,mode=mode)
+                wandb_out_imgs = []
+                for i, mesh_i in enumerate(meshes):
+                    trimesh_mesh_i = trimesh.Trimesh(mesh_i["vertices"], mesh_i["faces"])
+                    out_img_i, _ = render_mesh(trimesh_mesh_i)
+                    caption_i = ply_filename_out_arr[i].split('/')[-1]
+                    wandb_out_imgs.append(wandb.Image(out_img_i, caption=caption_i))
+                self.run.log(
+                    {"images/generated_renders": wandb_out_imgs}, step=epoch
+                )
 
 
 

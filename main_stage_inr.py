@@ -1,5 +1,6 @@
 import argparse
 import math
+import numpy as np
 
 import torch
 import torch.distributed as dist
@@ -14,6 +15,10 @@ from optimizer import create_optimizer, create_scheduler
 from utils.utils import set_seed
 from utils.profiler import Profiler
 from utils.setup import setup
+
+import trimesh
+from utils.utils import render_meshes, render_mesh
+
 import yaml
 
 
@@ -50,6 +55,14 @@ def parse_args():
     args, extra_args = parser.parse_known_args()
     return args, extra_args
 
+def parse_wandb_run_id_from_config(config_file_name):
+    # Remove the file extension
+    filename_without_extension = config_file_name.rsplit('.', 1)[0]
+
+    # Extract the portion after the first underscore, which contains the key-value pairs
+    filename_str = filename_without_extension.split('_config_', 1)[1] if '_config_' in filename_without_extension else ''
+
+    return filename_str
 
 if __name__ == "__main__":
     print(torch.cuda.is_available())
@@ -60,8 +73,9 @@ if __name__ == "__main__":
     #init wandb
     run = wandb.init(
         # Set the project where this run will be logged
-        project = "ginr_simplified_2",
+        project = "ginr_simplified",
         # Identifier for the current run
+        name=parse_wandb_run_id_from_config(args.model_config),
         notes = args.task,
         # Track hyperparameters and run metadata
         config = yaml.safe_load(open(args.model_config))
@@ -85,12 +99,18 @@ if __name__ == "__main__":
         profiler.get_model_size(model, opt="trainable-only")
 
     # Checkpoint loading
-    if not args.load_path == "":
-        ckpt = torch.load(args.load_path, map_location="cpu")
+    if not args.load_path == "" or not config.load_path == "":
+        if not args.load_path == "":
+            load_path = args.load_path
+        
+        if not config.load_path == "":
+            load_path = config.load_path
+        
+        ckpt = torch.load(load_path, map_location="cpu")    
         model.load_state_dict(ckpt["state_dict"], strict=False)
 
         if distenv.master:
-            logger.info(f"{args.load_path} model is loaded")
+            logger.info(f"{load_path} model is loaded")
     else:
         ckpt = None
         if args.eval or args.resume:
@@ -127,6 +147,21 @@ if __name__ == "__main__":
                         coord_inputs = coords['coords'].to(device)
                 model.init_factor(coord_inputs)
                 break
+            
+        # log GT on W&B
+        if config.type == 'overfit':
+            obj_file = str(config.dataset.folder).replace(".npy", "")
+            try:
+                mesh = trimesh.load(obj_file)
+            except:
+                print("GT mesh could not be found")
+                run.log(
+                    {"images/GT_render": "GT mesh could not be found"}
+                )
+            rendered_img, _ = render_mesh(mesh)
+            run.log(
+                    {"images/GT_render": wandb.Image(rendered_img, caption=obj_file)}
+                )
 
 
 

@@ -224,7 +224,7 @@ class TransINR(nn.Module):
                 grad_loss = grad_loss.mean()
                 off_surface_loss=off_surface_loss.mean()
 
-            total_loss = 3e3*sdf_loss + 3e3*off_surface_loss + 5e1* grad_loss + 1e2 * normal_loss
+            total_loss = 3e3*sdf_loss + 1e2*off_surface_loss + 5e1* grad_loss + 1e2 * normal_loss
             psnr = -10 * torch.log10(total_loss)
 
         elif type == 'occ':

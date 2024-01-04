@@ -72,6 +72,29 @@ def update_config(config, key, value):
         sub_config[key_parts[-1]]['value'] = value
     else:
         sub_config[key_parts[-1]] = {'value': value, 'type': 'string'}  # default type can be adjusted
+        
+def format_key_value_for_filename(key, value):
+    # Formats a key-value pair into a string suitable for filenames
+    key_formatted = key.replace('.', '_')
+
+    # If the value is a file path, extract just the file name
+    if isinstance(value, str) and os.path.isfile(value):
+        value = os.path.basename(value)
+
+    # Replace any other disallowed characters in file names
+    value = str(value).replace('/', '_').replace('\\', '_')
+
+    if isinstance(value, list):
+        value_formatted = '-'.join(map(str, value))
+    else:
+        value_formatted = value
+
+    return f"{key_formatted}={value_formatted}"
+
+
+# Function to identify keys with multiple values
+def keys_with_multiple_values(experiment_data):
+    return {key for key, value in experiment_data.items() if isinstance(value, list) and len(value) > 1}
 
 def main():
     if len(sys.argv) != 3:
@@ -111,7 +134,7 @@ def main():
     
     else:
         #experiment_file = input("Enter the path to the experiment file: ")
-        experiment_file = "./config/experiment_generator.yaml"
+        experiment_file = "./config/shape_overfit_config_generator.yaml"
         experiments = ordered_load(open(experiment_file, 'r'))
         
         # Path for the parent "experiments" directory
@@ -126,27 +149,35 @@ def main():
             experiment_dir = os.path.join(experiments_dir, experiment_name)
             os.makedirs(experiment_dir, exist_ok=True)
             
+            # Identify which keys have multiple values
+            varying_keys = keys_with_multiple_values(experiment_data)
+            
             keys, combinations = generate_combinations(experiment_data)
             combo_index = 1
             
             for combo in combinations:
                 config = ordered_load(open(template_file, 'r'))
                 
-                # Update config with the combination values
+                # Update config with the combination values and prepare filename parts
+                filename_parts = []
                 for key, value in zip(keys, combo):
                     update_config(config, key, value)
-                    # Assuming 'key' is a valid path in 'config'
-                    sub_config = config
-                    key_parts = key.split('.')
-                    for part in key_parts[:-1]:
-                        sub_config = sub_config[part]
-                        sub_config[key_parts[-1]]['value'] = value
+                    if key in varying_keys:
+                        filename_part = format_key_value_for_filename(key, value)
+                        filename_parts.append(filename_part)
                 
                 # Convert to final values
                 convert_to_values(config)
                 
+                # Join the filename parts and limit the length if necessary
+                filename_str = '_'.join(filename_parts)
+                # Limit the filename length to a reasonable number if needed
+                max_filename_length = 255  # Adjust as needed
+                if len(filename_str) > max_filename_length:
+                    filename_str = filename_str[:max_filename_length]
+                
                 # Generate a filename that reflects the combination
-                output_filename = f"{experiment_name}_config_{combo_index}.yaml"
+                output_filename = f"{experiment_name}_config_{filename_str}.yaml"
                 output_path = os.path.join(experiment_dir, output_filename)
                 save_config(config, output_path)
                 print(f"Configuration file saved as {output_path}")
